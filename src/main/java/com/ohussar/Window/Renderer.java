@@ -1,0 +1,61 @@
+package com.ohussar.Window;
+
+import com.ohussar.Main;
+import com.ohussar.Util.Vector2i;
+import com.ohussar.Window.Graphics.NineSlice;
+
+import java.awt.*;
+import java.awt.image.ImageObserver;
+import java.io.IOException;
+
+public class Renderer {
+    public static Font mainFont;
+    public static int scaleFactor = 3;
+    public static float defaultFontSize = 8f * scaleFactor;
+    public static void Init() throws IOException, FontFormatException {
+        mainFont = Font.createFont(Font.TRUETYPE_FONT, Main.class.getResourceAsStream("/fonts/Minecraft.ttf")).deriveFont(defaultFontSize);
+    }
+    public static void setFontSizePreference(float size){
+        mainFont = mainFont.deriveFont(size);
+    }
+
+
+    public static void renderImage(Graphics g, Image image, Vector2i position, Dimension size, Object observer){
+        g.drawImage(image, position.x, position.y, size.width, size.height, (ImageObserver) observer);
+    }
+
+    public static void renderString(Graphics g, String text, Dimension size, Vector2i offset, Object observer){
+        g.setFont(mainFont);
+        g.setColor(Color.white);
+        int width = g.getFontMetrics().stringWidth(text);
+        int height = g.getFontMetrics().getHeight();
+
+        g.drawString(text, (size.width - width) / 2 + offset.x, (size.height + height / 2 + offset.y) / 2);
+        setFontSizePreference(defaultFontSize);
+    }
+
+    public static void renderString(Graphics g, String text, Color color, Dimension size, Vector2i offset, Object observer){
+        g.setFont(mainFont);
+        g.setColor(color);
+        int width = g.getFontMetrics().stringWidth(text);
+        int height = g.getFontMetrics().getHeight();
+
+        g.drawString(text, (size.width - width) / 2 + offset.x, (size.height + height / 2 + offset.y) / 2);
+        setFontSizePreference(defaultFontSize);
+    }
+
+    public static void render9Slice(Graphics g, NineSlice slice, Dimension size, Object observer){
+        ImageObserver obs = (ImageObserver) observer;
+        // top
+        g.drawImage(slice.border, 0, 0, size.width, scaleFactor, obs);
+        // bottom
+        g.drawImage(slice.border, 0, size.height - scaleFactor, size.width, scaleFactor, obs);
+        // left
+        g.drawImage(slice.border, 0, scaleFactor, scaleFactor, size.height - scaleFactor, obs);
+        // right
+        g.drawImage(slice.border, size.width - scaleFactor, scaleFactor, scaleFactor, size.height - scaleFactor, obs);
+        // center
+        g.drawImage(slice.center, scaleFactor, scaleFactor, size.width - scaleFactor*2, size.height - scaleFactor*2, obs);
+    }
+
+}
