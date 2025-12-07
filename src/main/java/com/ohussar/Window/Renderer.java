@@ -39,7 +39,23 @@ public class Renderer {
         g.setColor(color);
         int width = g.getFontMetrics().stringWidth(text);
         int height = g.getFontMetrics().getHeight();
+        g.drawString(text, (size.width/2 - width/2) + offset.x, (size.height + height / 2 + offset.y) / 2);
+        setFontSizePreference(defaultFontSize);
+    }
+    public static void renderStringInput(Graphics g, String text, Color color, Dimension size, Vector2i offset, Object observer) {
+        g.setFont(mainFont);
+        g.setColor(color);
+        boolean ended=false;
+        if(text.endsWith("|")){
+            text = text.replace("|", "");
+            ended = true;
+        }
 
+        int width = g.getFontMetrics().stringWidth(text);
+        int height = g.getFontMetrics().getHeight();
+        if(ended){
+            text += "|";
+        }
         g.drawString(text, (size.width - width) / 2 + offset.x, (size.height + height / 2 + offset.y) / 2);
         setFontSizePreference(defaultFontSize);
     }

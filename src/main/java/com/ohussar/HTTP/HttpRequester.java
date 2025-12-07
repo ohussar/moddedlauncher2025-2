@@ -34,18 +34,21 @@ public class HttpRequester {
         FileOutputStream out = new FileOutputStream(path + File.separator + filename);
         BufferedOutputStream bout = new BufferedOutputStream(out, (int)completeFileSize);
 
-        Window.setProgressBarMaxValue((int)completeFileSize);
+        hook.trigger(new HookInfo("maxValue", (int) completeFileSize));
 
         int BLOCKSIZE = 1024 * 64 * 100;
         byte[] data = new byte[BLOCKSIZE];
         int x = 0;
         while((x = in.read(data, 0, BLOCKSIZE)) >= 0){
             bout.write(data, 0, x);
-            hook.trigger(x);
+            hook.trigger(new HookInfo("write", x));
         }
         data = null;
         bout.close();
         in.close();
         con.disconnect();
     }
+
+    public record HookInfo(String id, int value){}
+
 }

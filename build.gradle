@@ -10,7 +10,11 @@ mainClassName = 'com.ohussar.Main'
 repositories {
     mavenCentral()
 }
-
+jar {
+    manifest {
+        attributes 'Main-Class': mainClassName // Replace with your actual main class
+    }
+}
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'

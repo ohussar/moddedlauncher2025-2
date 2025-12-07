@@ -30,6 +30,10 @@ public class Label extends JLabel {
         this.setLocation(position.x, position.y);
         this.position = position;
     }
+
+    public void setFontSize(float fontSize){
+        this.fontSize = fontSize;
+    }
     @Override
     public Dimension getPreferredSize() {
         //Renderer.setFontSizePreference(8f);

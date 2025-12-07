@@ -7,6 +7,7 @@ import com.ohussar.Window.Window;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
 
 public class Button extends JButton{
     private Vector2i position;
@@ -14,6 +15,9 @@ public class Button extends JButton{
 
     private Trigger buttonPress = (obj) -> {};
     private Boolean locked = false;
+
+    boolean clicked = false;
+    private float fontSize = Renderer.defaultFontSize;
 
     public Button(JFrame frame, Vector2i position, String text){
         super();
@@ -31,6 +35,17 @@ public class Button extends JButton{
             }
         });
         frame.add(this);
+    }
+
+    @Override
+    protected void processMouseEvent(MouseEvent e) {
+        super.processMouseEvent(e);
+        if(e.getID() == MouseEvent.MOUSE_PRESSED){
+            clicked = true;
+        }
+        if(e.getID() == MouseEvent.MOUSE_RELEASED || e.getID() == MouseEvent.MOUSE_EXITED){
+            clicked = false;
+        }
     }
 
     public void onPress(Trigger buttonPress)
@@ -56,6 +71,21 @@ public class Button extends JButton{
     public void paintComponent(Graphics g) {
         this.getParent().repaint();
         Color color = Color.white;
+
+        if(clicked){
+            fontSize -= 0.5f;
+            if(fontSize < (((float) 2 /3) * Renderer.defaultFontSize)){
+                fontSize = ((float) 2/3) * Renderer.defaultFontSize;
+            }
+            color = Color.GRAY;
+        }else{
+            fontSize += 0.5f;
+            if(fontSize > Renderer.defaultFontSize){
+                fontSize = Renderer.defaultFontSize;
+            }
+        }
+
+
         if(!locked) {
             if (this.getMousePosition() != null) {
                 Renderer.render9Slice(g, Images.buttonHover, getPreferredSize(), this);
@@ -66,8 +96,10 @@ public class Button extends JButton{
             Renderer.render9Slice(g, Images.buttonLocked, getPreferredSize(), this);
             color = Color.DARK_GRAY;
         }
-
-        Renderer.renderString(g, getText(), color, getPreferredSize(), offset, this);
+        Dimension size = getPreferredSize();
+        Renderer.setFontSizePreference(fontSize);
+        Vector2i newOffset = new Vector2i((int) (offset.x * (fontSize/Renderer.defaultFontSize)), (int) (offset.y * (fontSize/Renderer.defaultFontSize)));
+        Renderer.renderString(g, getText(), color, size, newOffset, this);
     }
     @Override
     public Dimension getPreferredSize() {

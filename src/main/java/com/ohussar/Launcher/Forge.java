@@ -14,39 +14,38 @@ import java.net.URLConnection;
 
 public class Forge {
 
+    public static void installForge(){
+        JsonElement json = null;
+        try {
+            json = HttpRequester.makeRequest(Main.forgeAdress);
+        } catch (IOException | InterruptedException | URISyntaxException e) {
 
-    public static void startProcedure(Object obj) {
-        Thread thread = new Thread(() -> {
-            JsonElement json = null;
+            throw new RuntimeException(e);
+        }
+
+
+        if(json != null)
+        {
+            String url = json.getAsJsonObject().get("url").getAsString();
             try {
-                json = HttpRequester.makeRequest(Main.forgeAdress);
+                HttpRequester.download(url, "Minecraft.zip", "./", Forge::hook);
+                Unzip.unzip("./Minecraft.zip");
+                Window.closePopup();
             } catch (IOException e) {
                 throw new RuntimeException(e);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            } catch (URISyntaxException e) {
-                throw new RuntimeException(e);
             }
-            if(json != null)
-            {
-                String url = json.getAsJsonObject().get("url").getAsString();
-                try {
-                    HttpRequester.download(url, "Minecraft.zip", "./", Forge::hook);
-                    Unzip.unzip("./Minecraft.zip");
-                    Window.closePopup();
-                    Thread.currentThread().interrupt();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
-        Window.createPopup(null);
-        thread.start();
-
+        }
     }
 
+
     public static void hook(Object obj){
-        int value = (int) obj;
-        Window.incrementProgressBarValue(value);
+        if(obj instanceof HttpRequester.HookInfo info){
+            if(info.id().equals("write")){
+                Window.incrementProgressBarValue(info.value());
+            }else{
+                Window.setProgressBarMaxValue(info.value());
+
+            }
+        }
     }
 }
