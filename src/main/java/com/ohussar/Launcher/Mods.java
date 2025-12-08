@@ -27,7 +27,7 @@ public class Mods {
         if(json != null)
         {
             String urls = json.getAsJsonObject().get("links").getAsString();
-            File modFolder = new File(Main.modFolder);
+            File modFolder = new File(Main.minecraftPath + File.separator + "mods");
             if(!modFolder.exists()){
                 boolean a = modFolder.mkdir();
                 System.out.println(a);
@@ -54,23 +54,27 @@ public class Mods {
                 }
             };
             File[] modsInFolder = modFolder.listFiles(filter);
-            for(int i = 0; i < modsInFolder.length; i++){
-                boolean has = false;
-                for(int j = 0; j < filenamesArray.length; j++){
-                    if(filenamesArray[j].equals(modsInFolder[i].getName())){
-                        has = true;
+            if(modsInFolder != null) {
+                for (int i = 0; i < modsInFolder.length; i++) {
+                    boolean has = false;
+                    for (int j = 0; j < filenamesArray.length; j++) {
+                        if (filenamesArray[j].equals(modsInFolder[i].getName())) {
+                            has = true;
+                        }
                     }
-                }
-                if(!has){
-                    modsInFolder[i].delete();
+                    if (!has) {
+                        modsInFolder[i].delete();
+                    }
                 }
             }
 
             for(int i = 0; i < filenamesArray.length; i++){
                 boolean has = false;
-                for(int j = 0; j < modsInFolder.length; j++){
-                    if(filenamesArray[i].equals(modsInFolder[j].getName())){
-                        has = true;
+                if(modsInFolder != null) {
+                    for (int j = 0; j < modsInFolder.length; j++) {
+                        if (filenamesArray[i].equals(modsInFolder[j].getName())) {
+                            has = true;
+                        }
                     }
                 }
                 if(!has){

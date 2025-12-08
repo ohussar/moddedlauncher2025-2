@@ -22,6 +22,9 @@ public class Images {
     public static NineSlice buttonHover;
     public static NineSlice buttonLocked;
 
+    public static NineSlice inputHover;
+    public static NineSlice input;
+
     public static void Init(){
         try {
             backgroundImage = readImage("background.png");
@@ -36,6 +39,11 @@ public class Images {
             BufferedImage buttonHoverBorder = readImage("button_border_selected.png");
             BufferedImage buttonCenter = readImage("button_center.png");
             BufferedImage buttonCenterLocked = readImage("button_center_locked.png");
+
+            BufferedImage inputCenter = readImage("input_text_center.png");
+
+            input = new NineSlice(buttonBorder, inputCenter);
+            inputHover = new NineSlice(buttonHoverBorder, inputCenter);
 
             button = new NineSlice(buttonBorder, buttonCenter);
             buttonHover = new NineSlice(buttonHoverBorder, buttonCenter);

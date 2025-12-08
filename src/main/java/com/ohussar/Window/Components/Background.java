@@ -11,10 +11,11 @@ import java.awt.*;
 public class Background extends JComponent {
     private Image image;
     private Dimension size;
-    public Background(JFrame frame, Image image, Dimension dimension) {
+    public Background(Container frame, Image image, Dimension dimension) {
         this.setBounds(0, 0, dimension.width, dimension.height);
         this.image = image;
         this.size = dimension;
+
         frame.add(this);
     }
 

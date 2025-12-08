@@ -10,7 +10,7 @@ public class Label extends JLabel {
     private Vector2i position;
     private Float fontSize = 16f;
     private Vector2i offset = new Vector2i(0, (int)(11*Renderer.scaleFactor * (fontSize / Renderer.defaultFontSize)));
-    public Label(JFrame frame, Vector2i position, String text) {
+    public Label(Container frame, Vector2i position, String text) {
         super();
         this.position = position;
         this.setFocusable(false);
@@ -33,6 +33,7 @@ public class Label extends JLabel {
 
     public void setFontSize(float fontSize){
         this.fontSize = fontSize;
+        setSize(getPreferredSize());
     }
     @Override
     public Dimension getPreferredSize() {

@@ -12,7 +12,7 @@ public class ProgressBar extends JProgressBar {
 
     public static Dimension size = new Dimension(88 * Renderer.scaleFactor,10 * Renderer.scaleFactor);
 
-    public ProgressBar(JFrame frame, Vector2i position) {
+    public ProgressBar(Container frame, Vector2i position) {
         this.setFocusable(false);
         this.setBorderPainted(false);
         this.setSize(this.getPreferredSize());

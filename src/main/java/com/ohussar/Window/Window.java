@@ -2,6 +2,7 @@ package com.ohussar.Window;
 
 import com.ohussar.Launcher.StartProcedure;
 import com.ohussar.Main;
+import com.ohussar.Util.IntFilter;
 import com.ohussar.Util.Vector2i;
 import com.ohussar.Window.Components.*;
 import com.ohussar.Window.Components.Button;
@@ -9,20 +10,26 @@ import com.ohussar.Window.Components.Label;
 import com.ohussar.Window.Graphics.Images;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicInternalFrameUI;
+import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Arrays;
 
 public class Window {
 
     public static JFrame frame;
-    public static JFrame popup;
-
-    public static JFrame configWindow;
+    public static JInternalFrame popup;
+    public static JInternalFrame configWindow = new JInternalFrame();
 
     public static Dimension frameSize = new Dimension(256 * Renderer.scaleFactor, 256 * Renderer.scaleFactor);
     public static Dimension popupSize = new Dimension(128 * Renderer.scaleFactor, 48 * Renderer.scaleFactor);
+    public static Dimension configSize = new Dimension(224 * Renderer.scaleFactor, 224 * Renderer.scaleFactor);
+
     public static Dimension buttonSize = new Dimension(64 * Renderer.scaleFactor, 16 * Renderer.scaleFactor);
+
+
 
     public static int count = 0;
 
@@ -39,7 +46,8 @@ public class Window {
         frame.setUndecorated(true);
         frame.setResizable(false);
         frame.setLayout(null);
-
+        frame.pack();
+        createConfigWindow(null);
         int downY = frameSize.height - 20*Renderer.scaleFactor;
 
         Button buttonPlay = new Button(frame, Vector2i.zero(),"Jogar");
@@ -73,7 +81,7 @@ public class Window {
                         .centerX(buttonPlay.getPreferredSize().width)
                         .offset(3 * Renderer.scaleFactor + buttonPlay.getPreferredSize().width, downY)
                         .get());
-        //buttonConfig.onPress(StartProcedure::startProcedure);
+        buttonConfig.onPress(Window::setConfigVisible);
 
 
         for (int i = 0; i < Main.downloadThreads; i++){
@@ -145,22 +153,120 @@ public class Window {
 
             }
         });
+        Thread windowWatcher = new Thread(() -> {
+            boolean triggered = false;
+           while(true){
+               try {
+                   Thread.sleep(25);
+               } catch (InterruptedException e) {
+                   throw new RuntimeException(e);
+               }
+               if(!configWindow.isVisible() && triggered){
+                   triggered = false;
+                   Component[] components = frame.getContentPane().getComponents();
+                   for(Component c : components){
+                       if(c instanceof Button btn){
+                           btn.setLocked(false);
+                       }else if(c instanceof InputText inp){
+                           inp.setLocked(false);
+                       }else if(c instanceof CloseButton close){
+                           close.setEnabled(true);
+                       }
+                   }
 
+               }
+               if(configWindow.isVisible() && !triggered){
+                   triggered = true;
+
+                   Component[] components = frame.getContentPane().getComponents();
+                   for(Component c : components){
+                       if(c instanceof Button btn){
+                           btn.setLocked(true);
+                       }else if(c instanceof InputText inp){
+                           inp.setLocked(true);
+                       }else if(c instanceof CloseButton close){
+                           close.setEnabled(false);
+                       }
+                   }
+
+               }
+
+
+
+           }
+        });
+        windowWatcher.start();
         //createPopup(null);
     }
 
-    public static void createConfigWindow(Object obj){
 
+    public static JInternalFrame launcherCustomFrame(Dimension size){
+        JInternalFrame f = new JInternalFrame();
+        f.setPreferredSize(size);
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        f.setResizable(false);
+        f.setLayout(null);
+
+        f.getRootPane().setWindowDecorationStyle(JRootPane.NONE);
+        f.setBorder(null);
+        ((BasicInternalFrameUI) f.getUI()).setNorthPane(null);
+        return f;
     }
 
+    public static void createConfigWindow(Object obj){
+        configWindow = launcherCustomFrame(configSize);
+        configWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        //configWindow.setAlwaysOnTop(true);
+        Vector2i loc = new Coordinate(frame).centerX(configSize.width).centerY(configSize.height).get();
+        configWindow.setLocation(loc.x, loc.y);
+        configWindow.pack();
 
+        Label label = new Label(configWindow,
+                new Coordinate()
+                        .offset(3 * Renderer.scaleFactor, 0)
+                        .get(),
+                "Memória RAM: "
+        );
+
+        label.setFontSize(Renderer.defaultFontSize);
+
+        label.setPosition(
+                new Coordinate()
+                        .offset(4 * Renderer.scaleFactor,
+                                19 * Renderer.scaleFactor + label.getPreferredSize().height/2 - 1 * Renderer.scaleFactor)
+                        .get()
+        );
+
+        InputText ram = new InputText(configWindow,
+                new Coordinate()
+                        .offset(4 * Renderer.scaleFactor + label.getPreferredSize().width + 2 * Renderer.scaleFactor,
+                                19 * Renderer.scaleFactor)
+                        .get()
+                , "4096");
+        ram.setSize(90 * Renderer.scaleFactor, buttonSize.height);
+        ram.setEditable(false);
+        ram.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+        ram.setEnabled(true);
+        ram.setFocusable(true);
+
+        ((PlainDocument) ram.getDocument()).setDocumentFilter(new IntFilter());
+
+
+        new CloseButton(configWindow);
+        new Background(configWindow, Images.backgroundImage, configSize);
+
+        configWindow.setVisible(false);
+        configWindow.pack();
+        frame.add(configWindow);
+
+        //configWindow.setLocationRelativeTo(null);
+    }
+
+    public static void setConfigVisible(Object obj){
+        configWindow.setVisible(true);
+    }
     public static void createPopup(Object obj){
-        popup = new JFrame();
-        popup.setPreferredSize(popupSize);
-        popup.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        popup.setUndecorated(true);
-        popup.setResizable(false);
-        popup.setLayout(null);
+        popup = launcherCustomFrame(popupSize);
 
 
         progressBar = new ProgressBar(popup, new Coordinate(popupSize).centerX(ProgressBar.size.width).centerY().get());
@@ -180,7 +286,7 @@ public class Window {
 
         popup.setVisible(true);
         popup.pack();
-        popup.setLocationRelativeTo(null);
+        //popup.setLocationRelativeTo(null);
     }
     public static void closePopup(){
         popup.dispose();

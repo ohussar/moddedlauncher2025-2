@@ -27,7 +27,28 @@ public class StartProcedure {
             }
 
             Mods.checkAndDownloadMods();
+            while(true){
+                boolean can = false;
+                for(Thread t : Thread.getAllStackTraces().keySet()){
+                    if(t.getName().equals("download-watcher-thread")){
+                        if(t.isInterrupted()){
+                            can = true;
+                            break;
+                        }
+                    }
+                    System.out.println(t.getName());
+                }
 
+                if(can){
+                    break;
+                }
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            StartGame.startGame();
         });
         Window.createPopup(null);
         thread.start();

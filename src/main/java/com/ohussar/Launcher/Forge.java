@@ -17,6 +17,7 @@ public class Forge {
     public static void installForge(){
         JsonElement json = null;
         try {
+            System.out.println(Main.forgeAdress);
             json = HttpRequester.makeRequest(Main.forgeAdress);
         } catch (IOException | InterruptedException | URISyntaxException e) {
 

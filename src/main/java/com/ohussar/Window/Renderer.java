@@ -7,13 +7,14 @@ import com.ohussar.Window.Graphics.NineSlice;
 import java.awt.*;
 import java.awt.image.ImageObserver;
 import java.io.IOException;
+import java.util.Objects;
 
 public class Renderer {
     public static Font mainFont;
     public static int scaleFactor = 3;
     public static float defaultFontSize = 8f * scaleFactor;
     public static void Init() throws IOException, FontFormatException {
-        mainFont = Font.createFont(Font.TRUETYPE_FONT, Main.class.getResourceAsStream("/fonts/Minecraft.ttf")).deriveFont(defaultFontSize);
+        mainFont = Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(Main.class.getResourceAsStream("/fonts/Minecraft.ttf"))).deriveFont(defaultFontSize);
     }
     public static void setFontSizePreference(float size){
         mainFont = mainFont.deriveFont(size);

@@ -14,11 +14,11 @@ public class InputText extends JTextField {
     public boolean typing = false;
     private Vector2i position;
     private final Vector2i offset = new Vector2i(0, 11 * Renderer.scaleFactor);
-
+    private boolean locked = false;
     private int count = 0;
     private boolean cursor = false;
 
-    public InputText(JFrame frame, Vector2i position, String text){
+    public InputText(Container frame, Vector2i position, String text){
         super();
 
         this.getDocument().addDocumentListener(new DocumentListener() {
@@ -76,16 +76,27 @@ public class InputText extends JTextField {
         frame.add(this);
     }
 
+    public void setLocked(boolean f){
+        locked = f;
+        if(locked) {
+            this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        }else{
+            this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        }
+    }
+
     @Override
     protected void processMouseEvent(MouseEvent e) {
         super.processMouseEvent(e);
-        if (e.getButton() == 1) {
-            if(getMousePosition() != null){
-                this.setEditable(true);
-                cursor = true;
-                typing = true;
-                setCaretPosition(getText().length());
-                count = 0;
+        if(!locked) {
+            if (e.getButton() == 1) {
+                if (getMousePosition() != null) {
+                    this.setEditable(true);
+                    cursor = true;
+                    typing = true;
+                    setCaretPosition(getText().length());
+                    count = 0;
+                }
             }
         }
     }
@@ -94,16 +105,24 @@ public class InputText extends JTextField {
     public void paintComponent(Graphics g) {
         this.getParent().repaint();
         Color color = Color.white;
-        if(!typing) {
+        if(!typing && !locked) {
             if (this.getMousePosition() != null) {
-                com.ohussar.Window.Renderer.render9Slice(g, Images.buttonHover, getPreferredSize(), this);
+                com.ohussar.Window.Renderer.render9Slice(g, Images.inputHover, getPreferredSize(), this);
             } else {
-                com.ohussar.Window.Renderer.render9Slice(g, Images.button, getPreferredSize(), this);
+                com.ohussar.Window.Renderer.render9Slice(g, Images.input, getPreferredSize(), this);
             }
         }else{
-            com.ohussar.Window.Renderer.render9Slice(g, Images.buttonHover, getPreferredSize(), this);
+            com.ohussar.Window.Renderer.render9Slice(g, Images.inputHover, getPreferredSize(), this);
             color = Color.GRAY;
         }
+
+        if(locked){
+            Renderer.render9Slice(g, Images.buttonLocked, getPreferredSize(), this);
+            color = Color.DARK_GRAY;
+            Renderer.renderStringInput(g, getText(), color, getPreferredSize(), offset, this);
+            return;
+        }
+
         String f = getText();
         if(cursor && isEditable()){
             f = f + "|";

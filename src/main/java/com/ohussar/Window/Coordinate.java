@@ -13,7 +13,7 @@ public class Coordinate {
         this.coordinate = Vector2i.zero();
         this.frameSize = Window.frameSize;
     }
-    public Coordinate(JFrame frame){
+    public Coordinate(Container frame){
         this.coordinate = Vector2i.zero();
         this.frameSize = frame.getSize();
     }
