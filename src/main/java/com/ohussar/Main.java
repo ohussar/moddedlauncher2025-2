@@ -3,7 +3,10 @@ package com.ohussar;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.ohussar.Launcher.Config;
 import com.ohussar.Launcher.Loader;
+import com.ohussar.Launcher.PathMaker;
+import com.ohussar.Launcher.StartProcedure;
 import com.ohussar.Window.Renderer;
 import com.ohussar.Window.Window;
 
@@ -16,24 +19,64 @@ import java.net.URISyntaxException;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
 
-    public static String minecraftPath = "."+ File.separator + "Minecraft"  + File.separator + ".minecraft";
+    public static String rootPath = ".";
 
-    private static String serverAdress = "http://localhost:25523";//"https://server-test.ashycoast-64e998bb.brazilsouth.azurecontainerapps.io";
-    private static String password = "?code=testCode";
+    public static String minecraftPath = PathMaker.buildPath(rootPath, "Minecraft", ".minecraft");
+
+    private static final String serverAdress = "http://localhost:25523";//"https://server-test.ashycoast-64e998bb.brazilsouth.azurecontainerapps.io";
+    private static final String password = "?code=testCode";
 
     public static String forgeAdress = serverAdress+"/ForgeDownloadLink"+password;
     public static String modAdress = serverAdress+"/Mods"+password;
 
-    public static String modFolder = "./Folder/Minecraft/mods";
+    public static String modFolder = PathMaker.buildPath(minecraftPath, "mods");
 
     public static final int downloadThreads = 2;
+
+    public static Process minecraftProcess;
 
     public static void main(String[] args) throws IOException, URISyntaxException, InterruptedException, FontFormatException {
         System.setProperty("sun.java2d.uiScale.enabled", "true");
         System.setProperty("sun.java2d.uiScale", "1");
-        Loader.Init();
+
         Renderer.Init();
         Window.Init();
+        Config.loadConfigFile();
+        Loader.Init();
+        Window.updateDirectoryInfo();
+        Thread thread = new Thread(() -> {
+            while(true){
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+                if(minecraftProcess != null && minecraftProcess.isAlive()){
+                    if(Window.playButton != null){
+                        if(Window.playButton.getText().equals("Jogar")){
+                            Window.playButton.setText("Encerrar");
+                            Window.playButton.onPress((o) -> {
+                                ProcessHandle h = minecraftProcess.toHandle();
+                                if(h.isAlive()){
+                                    h.descendants().forEach(ProcessHandle::destroyForcibly);
+                                    h.destroyForcibly();
+                                }
+                            });
+                        }
+                    }
+                }else{
+                    if(Window.playButton != null){
+                        if(Window.playButton.getText().equals("Encerrar")){
+                            Window.playButton.setText("Jogar");
+                            Window.playButton.onPress(StartProcedure::startProcedure);
+                        }
+                    }
+                }
+
+            }
+        });
+        thread.start();
     }
 
 

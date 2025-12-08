@@ -17,6 +17,8 @@ public class InputText extends JTextField {
     private boolean locked = false;
     private int count = 0;
     private boolean cursor = false;
+    private boolean isFirst = false;
+    public Trigger onTypeTrigger;
 
     public InputText(Container frame, Vector2i position, String text){
         super();
@@ -34,7 +36,6 @@ public class InputText extends JTextField {
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                String username = getText();
                 //Config.saveUsername(username);
             }
         });
@@ -42,6 +43,9 @@ public class InputText extends JTextField {
             @Override
             public void keyPressed(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
+                    if(onTypeTrigger != null) {
+                        onTypeTrigger.trigger(getText());
+                    }
                     typing = false;
                     setEditable(false);
                 }
@@ -75,6 +79,13 @@ public class InputText extends JTextField {
         this.setVisible(true);
         frame.add(this);
     }
+    public void setFirst(boolean b){
+        isFirst = b;
+    }
+
+    public void setTrigger(Trigger trigger){
+        onTypeTrigger = trigger;
+    }
 
     public void setLocked(boolean f){
         locked = f;
@@ -85,12 +96,18 @@ public class InputText extends JTextField {
         }
     }
 
+
+
     @Override
     protected void processMouseEvent(MouseEvent e) {
         super.processMouseEvent(e);
         if(!locked) {
             if (e.getButton() == 1) {
                 if (getMousePosition() != null) {
+                    if(isFirst){
+                        this.setText("");
+                        isFirst = false;
+                    }
                     this.setEditable(true);
                     cursor = true;
                     typing = true;

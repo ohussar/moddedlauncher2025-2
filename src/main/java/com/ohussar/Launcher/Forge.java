@@ -30,9 +30,10 @@ public class Forge {
             String url = json.getAsJsonObject().get("url").getAsString();
             try {
                 HttpRequester.download(url, "Minecraft.zip", "./", Forge::hook);
+                Thread.sleep(200);
                 Unzip.unzip("./Minecraft.zip");
-                Window.closePopup();
-            } catch (IOException e) {
+                Window.hidePopup(null);
+            } catch (IOException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }

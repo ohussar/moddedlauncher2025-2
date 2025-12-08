@@ -36,7 +36,6 @@ public class StartProcedure {
                             break;
                         }
                     }
-                    System.out.println(t.getName());
                 }
 
                 if(can){
@@ -50,7 +49,7 @@ public class StartProcedure {
             }
             StartGame.startGame();
         });
-        Window.createPopup(null);
+        Window.setPopupVisible(null);
         thread.start();
 
     }

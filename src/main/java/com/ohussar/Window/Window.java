@@ -1,5 +1,6 @@
 package com.ohussar.Window;
 
+import com.ohussar.Launcher.Config;
 import com.ohussar.Launcher.StartProcedure;
 import com.ohussar.Main;
 import com.ohussar.Util.IntFilter;
@@ -15,6 +16,7 @@ import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
 import java.util.Arrays;
 
 public class Window {
@@ -33,7 +35,11 @@ public class Window {
 
     public static int count = 0;
 
+    public static Button playButton;
     private static ProgressBar progressBar;
+    public static InputText usernameInput;
+    public static InputText ramInput;
+    public static Label directoryInfo;
 
     private static final BarLabel[] downloadThreadsBar = new BarLabel[Main.downloadThreads];
 
@@ -48,11 +54,12 @@ public class Window {
         frame.setLayout(null);
         frame.pack();
         createConfigWindow(null);
+        createPopup(null);
         int downY = frameSize.height - 20*Renderer.scaleFactor;
 
-        Button buttonPlay = new Button(frame, Vector2i.zero(),"Jogar");
-        buttonPlay.setPosition(new Coordinate().centerX(buttonPlay.getPreferredSize().width).offset(0, downY).get());
-        buttonPlay.onPress(StartProcedure::startProcedure);
+        playButton = new Button(frame, Vector2i.zero(),"Jogar");
+        playButton.setPosition(new Coordinate().centerX(playButton.getPreferredSize().width).offset(0, downY).get());
+        playButton.onPress(StartProcedure::startProcedure);
         Label usernameTitle = new Label(frame,
                 new Coordinate().get()
                 , "Nome de usuário: ");
@@ -63,23 +70,26 @@ public class Window {
                         .get()
         );
 
-        InputText username = new InputText(frame,
+        usernameInput = new InputText(frame,
                 new Coordinate()
                         .offset(3 * Renderer.scaleFactor,
                                 downY )
                         .get()
                 , "Username");
-        username.setSize(90 * Renderer.scaleFactor, buttonSize.height);
-        username.setEditable(false);
-        username.setBorder(javax.swing.BorderFactory.createEmptyBorder());
-        username.setEnabled(true);
-        username.setFocusable(true);
+        usernameInput.setSize(90 * Renderer.scaleFactor, buttonSize.height);
+        usernameInput.setEditable(false);
+        usernameInput.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+        usernameInput.setEnabled(true);
+        usernameInput.setFocusable(true);
+        usernameInput.setTrigger((Object obj) ->{
+            Config.updateUsername((String) obj);
+        });
 
         Button buttonConfig = new Button(frame, Vector2i.zero(),"Configurações");
         buttonConfig.setPosition(
                 new Coordinate()
-                        .centerX(buttonPlay.getPreferredSize().width)
-                        .offset(3 * Renderer.scaleFactor + buttonPlay.getPreferredSize().width, downY)
+                        .centerX(playButton.getPreferredSize().width)
+                        .offset(3 * Renderer.scaleFactor + playButton.getPreferredSize().width, downY)
                         .get());
         buttonConfig.onPress(Window::setConfigVisible);
 
@@ -123,18 +133,18 @@ public class Window {
         frame.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(!e.getComponent().equals(username)){
-                    username.setEditable(false);
-                    username.typing = false;
+                if(!e.getComponent().equals(usernameInput)){
+                    usernameInput.setEditable(false);
+                    usernameInput.typing = false;
                 }
 
             }
 
             @Override
             public void mousePressed(MouseEvent e) {
-                if(!e.getComponent().equals(username)){
-                    username.setEditable(false);
-                    username.typing = false;
+                if(!e.getComponent().equals(usernameInput)){
+                    usernameInput.setEditable(false);
+                    usernameInput.typing = false;
                 }
             }
 
@@ -196,7 +206,7 @@ public class Window {
            }
         });
         windowWatcher.start();
-        //createPopup(null);
+
     }
 
 
@@ -237,20 +247,61 @@ public class Window {
                         .get()
         );
 
-        InputText ram = new InputText(configWindow,
+        ramInput = new InputText(configWindow,
                 new Coordinate()
                         .offset(4 * Renderer.scaleFactor + label.getPreferredSize().width + 2 * Renderer.scaleFactor,
                                 19 * Renderer.scaleFactor)
                         .get()
                 , "4096");
-        ram.setSize(90 * Renderer.scaleFactor, buttonSize.height);
-        ram.setEditable(false);
-        ram.setBorder(javax.swing.BorderFactory.createEmptyBorder());
-        ram.setEnabled(true);
-        ram.setFocusable(true);
+        ramInput.setSize(90 * Renderer.scaleFactor, buttonSize.height);
+        ramInput.setEditable(false);
+        ramInput.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+        ramInput.setEnabled(true);
+        ramInput.setFocusable(true);
+        ramInput.setTrigger((Object o) -> {
+            if(!((String) o).isEmpty()) {
+                Config.updateRam(Integer.parseInt((String) o));
+            }else{
+                Config.updateRam(0);
+            }
+        });
+        ((PlainDocument) ramInput.getDocument()).setDocumentFilter(new IntFilter());
 
-        ((PlainDocument) ram.getDocument()).setDocumentFilter(new IntFilter());
+        Button btn = new Button(configWindow, Vector2i.zero(), "Alterar diretório");
+        int y= 22 * Renderer.scaleFactor + ramInput.getPreferredSize().height;
+        btn.setPosition(new Vector2i(
+                3 * Renderer.scaleFactor,
+                y)
+        );
 
+        btn.onPress((a) -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            int result = fileChooser.showOpenDialog(null);
+            if(result == JFileChooser.APPROVE_OPTION){
+                File selected = fileChooser.getSelectedFile();
+                if(selected.getAbsolutePath().equals(System.getProperty("user.dir"))){
+                    directoryInfo.setText("Diretório: Padrão");
+                    directoryInfo.setSize(directoryInfo.getPreferredSize());
+                    Config.updateRootPath("");
+                }else{
+                    directoryInfo.setText("Diretório: " + selected.getAbsolutePath());
+                    directoryInfo.setSize(directoryInfo.getPreferredSize());
+                    Config.updateRootPath(selected.getAbsolutePath());
+                }
+            }else{
+                //directoryInfo.setText("Diretório: Padrão");
+                //Config.updateRootPath("");
+            }
+        });
+
+        directoryInfo = new Label(configWindow, Vector2i.zero(), "ABCDEDEDEDE");
+        directoryInfo.setPosition(
+                new Vector2i(5 * Renderer.scaleFactor,
+                         y + btn.getPreferredSize().height + Renderer.scaleFactor
+                        )
+        );
+        updateDirectoryInfo();
 
         new CloseButton(configWindow);
         new Background(configWindow, Images.backgroundImage, configSize);
@@ -262,13 +313,33 @@ public class Window {
         //configWindow.setLocationRelativeTo(null);
     }
 
+    public static void updateDirectoryInfo(){
+        if(Config.rootPath.equals("default")){
+            directoryInfo.setText("Diretório: Padrão");
+            directoryInfo.setSize(directoryInfo.getPreferredSize());
+        }else{
+            directoryInfo.setText("Diretório: " + Config.rootPath);
+            directoryInfo.setSize(directoryInfo.getPreferredSize());
+        }
+    }
+
+
     public static void setConfigVisible(Object obj){
         configWindow.setVisible(true);
     }
+    public static void setPopupVisible(Object obj){
+        popup.setVisible(true);
+    }
+    public static void hidePopup(Object obj){
+        popup.setVisible(false);
+    }
     public static void createPopup(Object obj){
         popup = launcherCustomFrame(popupSize);
-
-
+        popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        //configWindow.setAlwaysOnTop(true);
+        Vector2i loc = new Coordinate(frame).centerX(popupSize.width).centerY(popupSize.height).get();
+        popup.setLocation(loc.x, loc.y);
+        popup.pack();
         progressBar = new ProgressBar(popup, new Coordinate(popupSize).centerX(ProgressBar.size.width).centerY().get());
         progressBar.setMaximum(500);
         Label label = new Label(
@@ -284,8 +355,9 @@ public class Window {
 
         new Background(popup, Images.popupImage, popupSize);
 
-        popup.setVisible(true);
+        popup.setVisible(false);
         popup.pack();
+        frame.add(popup);
         //popup.setLocationRelativeTo(null);
     }
     public static void closePopup(){
@@ -298,7 +370,8 @@ public class Window {
     }
     public static void incrementProgressBarValue(int amount)
     {
-        progressBar.setValue(progressBar.getValue() + amount);
+        smoothBarUpdate(progressBar, amount);
+        //progressBar.setValue(progressBar.getValue() + amount);
         updateProgressBar();
     }
 
