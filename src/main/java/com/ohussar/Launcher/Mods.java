@@ -27,7 +27,7 @@ public class Mods {
         if(json != null)
         {
             String urls = json.getAsJsonObject().get("links").getAsString();
-            File modFolder = new File(Main.minecraftPath + File.separator + "mods");
+            File modFolder = new File(Main.modFolder);
             if(!modFolder.exists()){
                 boolean a = modFolder.mkdirs();
             }

@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Path;
 
 public class Forge {
     public static int zipFilecount = 5041;
@@ -28,15 +29,16 @@ public class Forge {
         {
             String url = json.getAsJsonObject().get("url").getAsString();
             try {
-                HttpRequester.download(url, "Minecraft.zip", "./", Forge::hook);
+                //HttpRequester.download(url, "Minecraft.zip", PathMaker.buildPath(Main.rootPath), Forge::hook);
                 Thread.sleep(200);
                 Window.setProgressBarMaxValue(zipFilecount);
 
-                Unzip.unzip("./Minecraft.zip", PathMaker.buildPath(".", "Minecraft", ".minecraft"), Forge::nameHook);
+                Unzip.unzip(PathMaker.buildPath(Main.rootPath, "Minecraft.zip"), Main.minecraftPath, Forge::nameHook);
 
                 Window.hidePopup(null);
                 Config.setForgeInstalled(true);
-            } catch (IOException | InterruptedException e) {
+                //IOException |
+            } catch ( InterruptedException e) {
                 Config.setForgeInstalled(false);
                 throw new RuntimeException(e);
             }

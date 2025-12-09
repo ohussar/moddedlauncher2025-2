@@ -10,6 +10,7 @@ import com.ohussar.Util.Util;
 import com.ohussar.Window.Window;
 
 import java.io.File;
+import java.nio.file.Path;
 
 public class Config {
 
@@ -80,6 +81,7 @@ public class Config {
         }
         rootPath = newRootPath;
         Main.minecraftPath = PathMaker.buildPath(Main.rootPath, "Minecraft", ".minecraft");
+        Main.modFolder = PathMaker.buildPath(Main.minecraftPath, "mods");
         JsonElement element = JsonParser.parseString(jsonReaded);
         if(!element.isJsonNull()){
             JsonObject obj = element.getAsJsonObject();
