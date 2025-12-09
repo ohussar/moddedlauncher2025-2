@@ -31,15 +31,22 @@ public class Window {
 
     public static Dimension buttonSize = new Dimension(64 * Renderer.scaleFactor, 16 * Renderer.scaleFactor);
 
-
-
-    public static int count = 0;
-
     public static Button playButton;
+    public static Button configButton;
+
     private static ProgressBar progressBar;
-    public static InputText usernameInput;
+    public static ProgressBar startGameBar;
+
     public static InputText ramInput;
+    public static InputText usernameInput;
+
+    private static Label usernameTitle;
     public static Label directoryInfo;
+    public static Label startGameBarLabel;
+    public static Label popupLabel;
+
+
+    public static int yOffStartGame = 0;
 
     private static final BarLabel[] downloadThreadsBar = new BarLabel[Main.downloadThreads];
 
@@ -60,7 +67,7 @@ public class Window {
         playButton = new Button(frame, Vector2i.zero(),"Jogar");
         playButton.setPosition(new Coordinate().centerX(playButton.getPreferredSize().width).offset(0, downY).get());
         playButton.onPress(StartProcedure::startProcedure);
-        Label usernameTitle = new Label(frame,
+        usernameTitle = new Label(frame,
                 new Coordinate().get()
                 , "Nome de usuário: ");
         usernameTitle.setPosition(
@@ -85,13 +92,13 @@ public class Window {
             Config.updateUsername((String) obj);
         });
 
-        Button buttonConfig = new Button(frame, Vector2i.zero(),"Configurações");
-        buttonConfig.setPosition(
+        configButton = new Button(frame, Vector2i.zero(),"Configurações");
+        configButton.setPosition(
                 new Coordinate()
                         .centerX(playButton.getPreferredSize().width)
                         .offset(3 * Renderer.scaleFactor + playButton.getPreferredSize().width, downY)
                         .get());
-        buttonConfig.onPress(Window::setConfigVisible);
+        configButton.onPress(Window::setConfigVisible);
 
 
         for (int i = 0; i < Main.downloadThreads; i++){
@@ -119,6 +126,23 @@ public class Window {
             bar.setVisible(false);
             label.setVisible(false);
         }
+        yOffStartGame = ProgressBar.size.height + 2 * Renderer.scaleFactor;
+        startGameBarLabel = new Label(frame, Vector2i.zero(), "AAAAAAAAAAAAAAAAAAAAAAAAA");
+        startGameBarLabel.setPosition(
+                new Coordinate()
+                        .offset(5 * Renderer.scaleFactor, frameSize.height - yOffStartGame + Renderer.scaleFactor + 1)
+                        .get()
+        );
+        startGameBarLabel.setVisible(false);
+        startGameBar = new ProgressBar(frame, Vector2i.zero(), new Dimension(250 * Renderer.scaleFactor, ProgressBar.size.height));
+        startGameBar.setPosition(
+                new Coordinate(frameSize)
+                        .centerX(startGameBar.sizeInt.width)
+                        .offset(0, frameSize.height - yOffStartGame)
+                        .get()
+        );
+        startGameBar.setVisible(false);
+        startGameBar.setMaximum(1000);
 
 
 
@@ -342,12 +366,12 @@ public class Window {
         popup.pack();
         progressBar = new ProgressBar(popup, new Coordinate(popupSize).centerX(ProgressBar.size.width).centerY().get());
         progressBar.setMaximum(500);
-        Label label = new Label(
+        popupLabel = new Label(
                 popup,
                 new Coordinate(popup).get(),
                 "AAAAAAAAAAAAAAAAAAAA");
-        label.setPosition(new Coordinate(popupSize)
-                .centerX(label.getPreferredSize().width)
+        popupLabel.setPosition(new Coordinate(popupSize)
+                .centerX(popupLabel.getPreferredSize().width)
                 .centerY().
                 offset(0, -16*Renderer.scaleFactor)
                 .get()
@@ -373,6 +397,11 @@ public class Window {
         smoothBarUpdate(progressBar, amount);
         //progressBar.setValue(progressBar.getValue() + amount);
         updateProgressBar();
+    }
+
+    public static void setPopLabelText(String text){
+        popupLabel.setText(text);
+        popupLabel.setSize(popupLabel.getPreferredSize());
     }
 
     public static void setProgressBarMaxValue(int value){
@@ -429,6 +458,65 @@ public class Window {
             Thread.currentThread().interrupt();
         });
         thread.start();
+    }
+    public static int[] progressPerPhase = new int[2];
+    public static int[] progress = new int[2];
+    public static void beginNewPhase(int phase){
+        int progressPerPhase = startGameBar.getMaximum() / 2;
+        startGameBar.setValue(progressPerPhase * phase);
+        startGameBar.repaint();
+        progress[phase] = 0;
+
+        if(phase == 0){
+            startGameBarLabel.setText("Baixando Forge");
+        }
+        if(phase == 1){
+            startGameBarLabel.setText("Baixando mods: 0/0");
+        }
+
+    }
+    public static void setMaxProgressPhase(int phase, int max){
+        progressPerPhase[phase] = max;
+        if(phase==1){
+            startGameBarLabel.setText("Baixando mods: 0/"+max);
+        }
+    }
+    public static void updateStartGamePhaseProgress(int startGamePhase, int increase){
+        int max = progressPerPhase[startGamePhase];
+        progress[startGamePhase] += increase;
+        float percentage = (float) progress[startGamePhase] / progressPerPhase[startGamePhase];
+
+        int maxInBar = startGameBar.getMaximum() / 2;
+
+        startGameBar.setValue(maxInBar * startGamePhase + (int)(maxInBar * percentage));
+        startGameBar.repaint();
+        if(startGamePhase == 0){
+            int newP = (int) (percentage * 100);
+            startGameBarLabel.setText("Baixando Forge: "+newP+"%");
+        }
+        if(startGamePhase==1){
+            startGameBarLabel.setText("Baixando mods: "+progress[startGamePhase]+"/"+max);
+        }
+
+    }
+
+    public static void offsetButtonsWhenPlayButtonPressed(boolean up){
+        Component[] list = {Window.playButton, Window.usernameInput, Window.configButton, Window.usernameTitle};
+        Window.startGameBar.setVisible(up);
+        Window.startGameBarLabel.setVisible(up);
+        int mult = 1;
+        if(!up){
+            mult = -1;
+        }
+
+        for(Component comp : list){
+
+            Vector2i position =
+                    new Vector2i(comp.getLocation().x, comp.getLocation().y - (Window.yOffStartGame - 2 * Renderer.scaleFactor)* mult);
+
+            comp.setLocation(position.x, position.y);
+        }
+
     }
 
 }

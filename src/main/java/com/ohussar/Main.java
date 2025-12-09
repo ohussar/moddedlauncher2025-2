@@ -7,6 +7,8 @@ import com.ohussar.Launcher.Config;
 import com.ohussar.Launcher.Loader;
 import com.ohussar.Launcher.PathMaker;
 import com.ohussar.Launcher.StartProcedure;
+import com.ohussar.Util.Vector2i;
+import com.ohussar.Window.Coordinate;
 import com.ohussar.Window.Renderer;
 import com.ohussar.Window.Window;
 
@@ -23,7 +25,7 @@ public class Main {
 
     public static String minecraftPath = PathMaker.buildPath(rootPath, "Minecraft", ".minecraft");
 
-    private static final String serverAdress = "http://localhost:25523";//"https://server-test.ashycoast-64e998bb.brazilsouth.azurecontainerapps.io";
+    private static final String serverAdress = "https://server-test.ashycoast-64e998bb.brazilsouth.azurecontainerapps.io";
     private static final String password = "?code=testCode";
 
     public static String forgeAdress = serverAdress+"/ForgeDownloadLink"+password;
@@ -56,6 +58,7 @@ public class Main {
                     if(Window.playButton != null){
                         if(Window.playButton.getText().equals("Jogar")){
                             Window.playButton.setText("Encerrar");
+                            //Window.offsetButtonsWhenPlayButtonPressed(true);
                             Window.playButton.onPress((o) -> {
                                 ProcessHandle h = minecraftProcess.toHandle();
                                 if(h.isAlive()){
@@ -68,6 +71,7 @@ public class Main {
                 }else{
                     if(Window.playButton != null){
                         if(Window.playButton.getText().equals("Encerrar")){
+                            //Window.offsetButtonsWhenPlayButtonPressed(false);
                             Window.playButton.setText("Jogar");
                             Window.playButton.onPress(StartProcedure::startProcedure);
                         }

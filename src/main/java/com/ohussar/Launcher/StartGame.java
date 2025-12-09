@@ -2,6 +2,7 @@ package com.ohussar.Launcher;
 
 import com.ohussar.Main;
 import com.ohussar.Util.Util;
+import com.ohussar.Window.Window;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class StartGame {
             Main.minecraftProcess = Runtime.getRuntime().exec("cmd.exe /c cd " + finalPath +File.separator + " && cmd /c test.bat");
             StreamHandler.handleInputStream(Main.minecraftProcess.getInputStream());
             StreamHandler.handleErrorStream(Main.minecraftProcess.getErrorStream());
+            Window.offsetButtonsWhenPlayButtonPressed(false);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

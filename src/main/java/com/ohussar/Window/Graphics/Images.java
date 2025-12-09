@@ -18,6 +18,8 @@ public class Images {
     public static BufferedImage progressBarFrameImage;
     public static BufferedImage progressBarCenterImage;
 
+    public static NineSlice progressBar
+            ;
     public static NineSlice button;
     public static NineSlice buttonHover;
     public static NineSlice buttonLocked;
@@ -49,8 +51,12 @@ public class Images {
             buttonHover = new NineSlice(buttonHoverBorder, buttonCenter);
             buttonLocked = new NineSlice(buttonBorder, buttonCenterLocked);
 
+
+
             progressBarCenterImage = readImage("progress_bar_center.png");
             progressBarFrameImage = readImage("progress_bar_frame.png");
+
+            progressBar = new NineSlice(buttonBorder, buttonCenter);
 
         } catch (IOException e) {
             throw new IOError(e);

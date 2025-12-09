@@ -18,35 +18,42 @@ import java.util.List;
 public class StartProcedure {
     public static void startProcedure(Object obj) {
         Thread thread = new Thread(() -> {
-
-            Forge.installForge();
+            Window.offsetButtonsWhenPlayButtonPressed(true);
+            Window.beginNewPhase(0);
+            if(!Config.isForgeInstalled) {
+                Forge.installForge();
+            }else{
+                Window.hidePopup(null);
+            }
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
+                Window.offsetButtonsWhenPlayButtonPressed(false);
                 throw new RuntimeException(e);
             }
-
+            Window.beginNewPhase(1);
             Mods.checkAndDownloadMods();
             while(true){
                 boolean can = false;
+
                 for(Thread t : Thread.getAllStackTraces().keySet()){
                     if(t.getName().equals("download-watcher-thread")){
-                        if(t.isInterrupted()){
-                            can = true;
-                            break;
-                        }
+                        can = true;
                     }
                 }
 
-                if(can){
+                if(!can){
+                    System.out.println("call");
                     break;
                 }
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
+                    Window.offsetButtonsWhenPlayButtonPressed(false);
                     throw new RuntimeException(e);
                 }
             }
+
             StartGame.startGame();
         });
         Window.setPopupVisible(null);

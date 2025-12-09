@@ -29,8 +29,7 @@ public class Mods {
             String urls = json.getAsJsonObject().get("links").getAsString();
             File modFolder = new File(Main.minecraftPath + File.separator + "mods");
             if(!modFolder.exists()){
-                boolean a = modFolder.mkdir();
-                System.out.println(a);
+                boolean a = modFolder.mkdirs();
             }
             String[] urlsArray = urls.split(" ");
             String[] filenamesArray = new String[urlsArray.length];
@@ -60,6 +59,9 @@ public class Mods {
                     for (int j = 0; j < filenamesArray.length; j++) {
                         if (filenamesArray[j].equals(modsInFolder[i].getName())) {
                             has = true;
+                            if(modsInFolder[i].length() == 0){
+                                has = false;
+                            }
                         }
                     }
                     if (!has) {
@@ -74,6 +76,9 @@ public class Mods {
                     for (int j = 0; j < modsInFolder.length; j++) {
                         if (filenamesArray[i].equals(modsInFolder[j].getName())) {
                             has = true;
+                            if(modsInFolder[j].length() == 0){
+                                has = false;
+                            }
                         }
                     }
                 }
@@ -89,12 +94,17 @@ public class Mods {
                 Window.setDownloadThreadsBarVisible(true);
             }
 
+            Window.setMaxProgressPhase(1, toDownload.size());
+
 
             for(int i = 0; i < Main.downloadThreads; i++){
                 String threadName = "thread-downloader-"+i;
+                int finalI = i;
                 Thread thread = new Thread(() -> {
                     if (!toDownloadRef.isEmpty()) {
                         downloadSubList(toDownload);
+                    }else{
+                        Window.setNthDownloadVisible(finalI, false);
                     }
                     Thread.currentThread().interrupt();
                 });
@@ -143,9 +153,11 @@ public class Mods {
                     Window.updateNthDownloadBar(i, 0);
                     Window.updateNthDownloadLabel(i, downloadInfo.filename);
                     HttpRequester.download(downloadurl, filename, Main.modFolder, Mods::Hook);
+                    Window.updateStartGamePhaseProgress(1, 1);
                 } catch (IOException e) {
                     try {
                         HttpRequester.download(downloadurl, filename, Main.modFolder, Mods::Hook);
+                        Window.updateStartGamePhaseProgress(1, 1);
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }

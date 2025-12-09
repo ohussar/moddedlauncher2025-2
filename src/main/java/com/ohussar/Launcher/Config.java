@@ -20,6 +20,8 @@ public class Config {
     public static int ram = 0;
     public static String rootPath = "";
 
+    public static boolean isForgeInstalled;
+
     public static void loadConfigFile(){
         String fileContent = Util.readFile(configFile);
         JsonElement element = JsonParser.parseString(fileContent);
@@ -31,9 +33,10 @@ public class Config {
             username = obj.get("username").getAsString();
             ram = obj.get("ram").getAsInt();
             rootPath = obj.get("root_path").getAsString();
+            isForgeInstalled = obj.get("forge_installed").getAsBoolean();
             jsonReaded = fileContent;
         }else{
-            jsonReaded = "{\"username\": \"\", \"ram\": 0, \"root_path\": default}";
+            jsonReaded = "{\"username\": \"\", \"ram\": 0, \"root_path\": default}, \"forge_installed\": false}";
         }
 
         if(Window.usernameInput != null){
@@ -56,6 +59,16 @@ public class Config {
         updateRootPath(rootPath);
     }
 
+    public static void setForgeInstalled(boolean p){
+        isForgeInstalled = p;
+        JsonElement element = JsonParser.parseString(jsonReaded);
+        if(!element.isJsonNull()){
+            JsonObject obj = element.getAsJsonObject();
+            obj.addProperty("forge_installed", p);
+            Util.writeToFile(configFile, element.toString());
+        }
+    }
+
     public static void updateRootPath(String newRootPath){
         if(newRootPath.isEmpty()){
             newRootPath = "default";
@@ -67,8 +80,6 @@ public class Config {
         }
         rootPath = newRootPath;
         Main.minecraftPath = PathMaker.buildPath(Main.rootPath, "Minecraft", ".minecraft");
-        System.out.println(Main.rootPath);
-        System.out.println(Main.minecraftPath);
         JsonElement element = JsonParser.parseString(jsonReaded);
         if(!element.isJsonNull()){
             JsonObject obj = element.getAsJsonObject();
