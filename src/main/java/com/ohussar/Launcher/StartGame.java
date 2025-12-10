@@ -37,52 +37,5 @@ public class StartGame {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-
-    }
-    public static List<String> fixParsedTokens(List<String> rawTokens) {
-        List<String> fixedTokens = new ArrayList<>();
-
-        for (int i = 0; i < rawTokens.size(); i++) {
-            String current = rawTokens.get(i);
-
-            if (current.endsWith("=") && (i + 1) < rawTokens.size()) {
-                String next = rawTokens.get(i + 1);
-
-                String mergedToken = current + next;
-
-                mergedToken = mergedToken.replace("\"", "");
-
-                fixedTokens.add(mergedToken);
-                i++;
-            } else {
-                fixedTokens.add(current);
-            }
-        }
-        return fixedTokens;
-    }
-    public static List<String> parseCommandString(String commandString) {
-        List<String> tokens = new ArrayList<>();
-
-        Pattern pattern = Pattern.compile("([^\\s\"=]+=|\"[^\"]*\"|\\S+)");
-        Matcher matcher = pattern.matcher(commandString);
-
-        while (matcher.find()) {
-            String token = matcher.group();
-
-            if (token.contains("=\"") && token.endsWith("\"")) {
-                int valueStartIndex = token.indexOf('\"');
-                String key = token.substring(0, valueStartIndex + 1);
-                String value = token.substring(valueStartIndex + 1, token.length() - 1);
-
-                tokens.add(key + value);
-
-            } else if (token.startsWith("\"") && token.endsWith("\"")) {
-                tokens.add(token.substring(1, token.length() - 1));
-            } else {
-                tokens.add(token);
-            }
-        }
-        return tokens;
     }
 }

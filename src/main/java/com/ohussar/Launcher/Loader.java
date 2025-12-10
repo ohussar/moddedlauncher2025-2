@@ -118,7 +118,7 @@ public class Loader {
         FINAL_COMMAND =
                 finalCommand + "";
 
-        Util.writeToFile(Main.minecraftPath + "\\test.bat", FINAL_COMMAND);
+        Util.writeToFile(PathMaker.buildPath(Main.minecraftPath, "test.bat"), FINAL_COMMAND);
     }
 
     private static String getReplaced(String separator) {
