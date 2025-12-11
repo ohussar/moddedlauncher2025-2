@@ -25,7 +25,7 @@ public class Main {
 
     public static String minecraftPath = PathMaker.buildPath(rootPath, "Minecraft", ".minecraft");
 
-    private static final String serverAdress = "http://localhost:25523";//"https://server-test.ashycoast-64e998bb.brazilsouth.azurecontainerapps.io";
+    private static final String serverAdress = "https://server-test.ashycoast-64e998bb.brazilsouth.azurecontainerapps.io";
     private static final String password = "?code=testCode";
 
     public static String forgeAdress = serverAdress+"/ForgeDownloadLink"+password;

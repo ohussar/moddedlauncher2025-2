@@ -4,6 +4,8 @@ import com.ohussar.Main;
 import com.ohussar.Util.Util;
 import com.ohussar.Window.Window;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +22,37 @@ public class StartGame {
         res = res.replace("${auth_player_name}", Config.username);
         res = res.replace("${auth_uuid}",  UUID.nameUUIDFromBytes(Config.username.getBytes()).toString());
         res = res.replace("%CLASSPATH%", "@" + System.getProperty("user.dir") + File.separator + "bakedclasspath.txt");
+
+        if(Config.username.isEmpty()){
+            Window.createrAlert("O nome de usuário está vazio!");
+            StartProcedure.reset();
+            return;
+        }
+
+        if(Config.username.length() < 3){
+            Window.createrAlert("O nome de usuário precisa ter pelo menos 3 caracteres!");
+            StartProcedure.reset();
+            return;
+        }
+
+        if(Config.username.contains(" ")){
+            Window.createrAlert("O nome de usuário não pode conter espaço!");
+            StartProcedure.reset();
+            return;
+        }
+        if(Config.ram < 2048 && Config.ram > 0){
+            Window.createrAlert("Aloque pelo menos 2048 Mb de ram!");
+            StartProcedure.reset();
+            return;
+        }
+
+        if(Config.ram <= 0){
+            Window.createrAlert("Aloque uma quantia válida de ram!");
+            StartProcedure.reset();
+            return;
+        }
+
+
         String finalPath = "";
         if(Main.minecraftPath.startsWith("."+File.separator)){ // relative path
             finalPath = System.getProperty("user.dir") + File.separator + Main.minecraftPath.replace("."+File.separator, "");

@@ -12,7 +12,7 @@ import java.awt.event.MouseEvent;
 public class Button extends JButton{
     private Vector2i position;
     private final Vector2i offset = new Vector2i(0, 11 * Renderer.scaleFactor);
-
+    public boolean overrideMinimumSize = false;
     private Trigger buttonPress = (obj) -> {};
     private Boolean locked = false;
 
@@ -109,6 +109,10 @@ public class Button extends JButton{
 
         int width = this.getFontMetrics(Renderer.mainFont).stringWidth(getText());
         int margin = 4 * 2 * Renderer.scaleFactor;
+
+        if(overrideMinimumSize){
+            return new Dimension(width + margin, Window.buttonSize.height);
+        }
 
         if(Window.buttonSize.width - (width + margin) < 0){
             return new Dimension(width + margin, Window.buttonSize.height);

@@ -9,7 +9,7 @@ import java.awt.*;
 public class Label extends JLabel {
     private Vector2i position;
     private Float fontSize = 16f;
-    private Vector2i offset = new Vector2i(0, (int)(11*Renderer.scaleFactor * (fontSize / Renderer.defaultFontSize)));
+    public static Vector2i offset = new Vector2i(0, (int)(11*Renderer.scaleFactor * (16 / Renderer.defaultFontSize)));
     public Label(Container frame, Vector2i position, String text) {
         super();
         this.position = position;
@@ -24,7 +24,12 @@ public class Label extends JLabel {
     @Override
     protected void paintComponent(Graphics g) {
         Renderer.setFontSizePreference(fontSize);
-        Renderer.renderString(g, getText(), Color.white, getPreferredSize(),  offset, this);
+        if(fontSize != 16f){
+            Vector2i offset = new Vector2i(0, (int)(11*Renderer.scaleFactor * (16 / Renderer.defaultFontSize)));
+            Renderer.renderString(g, getText(), Color.white, getSize(),  offset, this);
+        }else {
+            Renderer.renderString(g, getText(), Color.white, getSize(), offset, this);
+        }
     }
     public void setPosition(Vector2i position){
         this.setLocation(position.x, position.y);

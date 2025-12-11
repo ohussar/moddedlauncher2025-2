@@ -22,6 +22,7 @@ public class Mods {
         try {
             json = HttpRequester.makeRequest(Main.modAdress);
         } catch (IOException | InterruptedException | URISyntaxException e) {
+            StartProcedure.reset();
             throw new RuntimeException(e);
         }
         if(json != null)

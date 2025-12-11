@@ -21,6 +21,7 @@ public class Forge {
             json = HttpRequester.makeRequest(Main.forgeAdress);
         } catch (IOException | InterruptedException | URISyntaxException e) {
             Config.setForgeInstalled(false);
+            StartProcedure.reset();
             throw new RuntimeException(e);
         }
 
@@ -29,7 +30,7 @@ public class Forge {
         {
             String url = json.getAsJsonObject().get("url").getAsString();
             try {
-                //HttpRequester.download(url, "Minecraft.zip", PathMaker.buildPath(Main.rootPath), Forge::hook);
+                HttpRequester.download(url, "Minecraft.zip", PathMaker.buildPath(Main.rootPath), Forge::hook);
                 Thread.sleep(200);
                 Window.setProgressBarMaxValue(zipFilecount);
 
@@ -37,9 +38,9 @@ public class Forge {
 
                 Window.hidePopup(null);
                 Config.setForgeInstalled(true);
-                //IOException |
-            } catch ( InterruptedException e) {
+            } catch (IOException | InterruptedException e) {
                 Config.setForgeInstalled(false);
+                StartProcedure.reset();
                 throw new RuntimeException(e);
             }
         }

@@ -37,6 +37,9 @@ public class InputText extends JTextField {
             @Override
             public void changedUpdate(DocumentEvent e) {
                 //Config.saveUsername(username);
+                if(onTypeTrigger != null) {
+                    onTypeTrigger.trigger(getText());
+                }
             }
         });
         this.addKeyListener(new KeyAdapter() {

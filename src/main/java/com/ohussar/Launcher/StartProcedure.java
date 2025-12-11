@@ -28,7 +28,7 @@ public class StartProcedure {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                Window.offsetButtonsWhenPlayButtonPressed(false);
+                StartProcedure.reset();
                 throw new RuntimeException(e);
             }
             Window.beginNewPhase(1);
@@ -43,7 +43,6 @@ public class StartProcedure {
                 }
 
                 if(!can){
-                    System.out.println("call");
                     break;
                 }
                 try {
@@ -60,6 +59,12 @@ public class StartProcedure {
         thread.start();
 
     }
+
+    public static void reset(){
+        Window.hidePopup(null);
+        Window.offsetButtonsWhenPlayButtonPressed(false);
+    }
+
 
 
 }

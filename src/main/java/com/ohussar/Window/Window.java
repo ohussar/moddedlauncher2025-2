@@ -24,15 +24,18 @@ public class Window {
     public static JFrame frame;
     public static JInternalFrame popup;
     public static JInternalFrame configWindow = new JInternalFrame();
+    public static JInternalFrame alert = new JInternalFrame();
 
     public static Dimension frameSize = new Dimension(256 * Renderer.scaleFactor, 256 * Renderer.scaleFactor);
     public static Dimension popupSize = new Dimension(128 * Renderer.scaleFactor, 48 * Renderer.scaleFactor);
     public static Dimension configSize = new Dimension(224 * Renderer.scaleFactor, 224 * Renderer.scaleFactor);
+    public static Dimension alertSize = popupSize;
 
     public static Dimension buttonSize = new Dimension(64 * Renderer.scaleFactor, 16 * Renderer.scaleFactor);
 
     public static Button playButton;
     public static Button configButton;
+    public static Button alertButton;
 
     private static ProgressBar progressBar;
     public static ProgressBar startGameBar;
@@ -44,6 +47,7 @@ public class Window {
     public static Label directoryInfo;
     public static Label startGameBarLabel;
     public static Label popupLabel;
+    public static Label alertLabel;
 
 
     public static int yOffStartGame = 0;
@@ -60,6 +64,7 @@ public class Window {
         frame.setResizable(false);
         frame.setLayout(null);
         frame.pack();
+        initAlert();
         createConfigWindow(null);
         createPopup(null);
         int downY = frameSize.height - 20*Renderer.scaleFactor;
@@ -357,6 +362,63 @@ public class Window {
     public static void hidePopup(Object obj){
         popup.setVisible(false);
     }
+
+    public static void initAlert(){
+        alert = launcherCustomFrame(alertSize);
+        alert.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        Vector2i loc = new Coordinate(frame).centerX(alertSize.width).centerY(alertSize.height).get();
+        alert.setLocation(loc.x, loc.y);
+        alert.pack();
+        alertLabel = new Label(alert, Vector2i.zero(), "AAAAAAAAAAAAAAAAAAAA");
+        alertLabel.setPosition(
+                new Coordinate(alertSize)
+                        .centerX(alertLabel.getPreferredSize().width)
+                        .offset(0, alertLabel.getPreferredSize().height + 8 * Renderer.scaleFactor)
+                        .get()
+        );
+        alertButton = new Button(alert, Vector2i.zero(), "OK");
+        alertButton.overrideMinimumSize = true;
+        alertButton.setSize(alertButton.getPreferredSize());
+        alertButton.setPosition(new Coordinate(alertSize)
+                .centerX(alertButton.getPreferredSize().width)
+                .offset(0, alertSize.height - alertButton.getPreferredSize().height - 4 * Renderer.scaleFactor)
+                .get()
+        );
+        alertButton.onPress((obj) -> {
+            alert.setVisible(false);
+        });
+        new Background(alert, Images.popupImage, alertSize);
+
+        alert.setVisible(false);
+        alert.pack();
+        frame.add(alert);
+    }
+
+
+    public static void createrAlert(String message){
+
+        alertLabel.setText("<html>" +message+ "</html>");
+        Dimension size = new Dimension(alertSize.width - 8 * Renderer.scaleFactor, alertLabel.getPreferredSize().height*3);
+        alertLabel.setSize(size);
+
+        int height = Renderer.getMultilineHeight("<html>" +message+ "</html>", size, Label.offset);
+        int yoff = -6*Renderer.scaleFactor;
+        if(height == 35) {
+            yoff = -8*Renderer.scaleFactor;
+        }
+        alertLabel.setPosition(
+                new Coordinate(alertSize)
+                        .centerX(size.width)
+                        .centerY(height)
+                        .offset(0, yoff)
+                        .get()
+        );
+        alertLabel.repaint();
+        alert.setVisible(true);
+    }
+
+
+
     public static void createPopup(Object obj){
         popup = launcherCustomFrame(popupSize);
         popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
