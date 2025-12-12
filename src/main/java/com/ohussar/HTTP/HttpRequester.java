@@ -3,6 +3,8 @@ package com.ohussar.HTTP;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.google.gson.Strictness;
+import com.google.gson.stream.MalformedJsonException;
 import com.ohussar.Window.Components.Trigger;
 import com.ohussar.Window.Window;
 
@@ -18,9 +20,12 @@ import java.net.http.HttpResponse;
 public class HttpRequester {
     public static HttpClient client = HttpClient.newHttpClient();
 
-    public static JsonElement makeRequest(String url) throws IOException, InterruptedException, URISyntaxException {
+    public static JsonElement makeRequest(String url) throws IOException, InterruptedException, URISyntaxException, MalformedJsonException {
         HttpRequest request = HttpRequest.newBuilder().GET().uri(new URI(url)).build();
         HttpResponse<String> a = client.send(request, HttpResponse.BodyHandlers.ofString());
+        if(a.body().startsWith("<!DOCTYPE html>")){
+            throw new IOException("aaa");
+        }
         return JsonParser.parseString(a.body());
     }
 

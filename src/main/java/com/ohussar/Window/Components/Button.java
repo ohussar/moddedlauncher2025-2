@@ -90,7 +90,8 @@ public class Button extends JButton{
 
 
         if(!locked) {
-            if (this.getMousePosition() != null) {
+
+            if (this.getModel().isRollover()) {
                 Renderer.render9Slice(g, Images.buttonHover, getPreferredSize(), this);
             } else {
                 Renderer.render9Slice(g, Images.button, getPreferredSize(), this);

@@ -14,8 +14,10 @@ import javax.swing.*;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 import javax.swing.text.PlainDocument;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseWheelEvent;
 import java.io.File;
 import java.util.Arrays;
 
@@ -56,7 +58,7 @@ public class Window {
 
 
     public static void Init(){
-        Images.Init();
+
         frame = new JFrame();
         frame.setPreferredSize(frameSize);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -150,9 +152,36 @@ public class Window {
         startGameBar.setMaximum(1000);
 
 
+        Label label = new Label(frame, Vector2i.zero(), "");
 
-        new CloseButton(frame);
-        new Background(frame, Images.backgroundImage, frameSize);
+        label.setSize(frameSize);
+
+        label.setText("<html>AAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAA AAAAAAAA AAAAAAAAA</html>");
+
+        label.setPosition(
+                new Coordinate()
+                        .offset(0, -60 * Renderer.scaleFactor)
+                        .get()
+        );
+
+        Dimension size =  new Dimension(640, 360);
+
+
+
+
+
+       Background back = new Background(frame, Images.title, size,
+                new Coordinate(frameSize)
+                        .centerX(size.width)
+                        .offset(0, -75)
+                        .get()
+        );
+       back.setOpaque(false);
+       back.setEnabled(false);
+       back.setFocusable(false);
+       new CloseButton(frame);
+
+       new Background(frame, Images.backgroundImage, frameSize);
 
         frame.setVisible(true);
         frame.pack();
@@ -184,7 +213,15 @@ public class Window {
 
             @Override
             public void mouseEntered(MouseEvent e) {
-
+                for( Component comp : frame.getContentPane().getComponents()){
+                    if(comp instanceof Button btn){
+                        if(btn.contains(e.getLocationOnScreen())){
+                            btn.getModel().setRollover(true);
+                        }else{
+                            btn.getModel().setRollover(false);
+                        }
+                    }
+                }
             }
 
             @Override
@@ -192,6 +229,7 @@ public class Window {
 
             }
         });
+
         Thread windowWatcher = new Thread(() -> {
             boolean triggered = false;
            while(true){
@@ -531,9 +569,11 @@ public class Window {
 
         if(phase == 0){
             startGameBarLabel.setText("Baixando Forge");
+            startGameBarLabel.setSize(startGameBarLabel.getPreferredSize());
         }
         if(phase == 1){
             startGameBarLabel.setText("Baixando mods: 0/0");
+            startGameBarLabel.setSize(startGameBarLabel.getPreferredSize());
         }
 
     }
@@ -541,6 +581,7 @@ public class Window {
         progressPerPhase[phase] = max;
         if(phase==1){
             startGameBarLabel.setText("Baixando mods: 0/"+max);
+            startGameBarLabel.setSize(startGameBarLabel.getPreferredSize());
         }
     }
     public static void updateStartGamePhaseProgress(int startGamePhase, int increase){
@@ -555,9 +596,11 @@ public class Window {
         if(startGamePhase == 0){
             int newP = (int) (percentage * 100);
             startGameBarLabel.setText("Baixando Forge: "+newP+"%");
+            startGameBarLabel.setSize(startGameBarLabel.getPreferredSize());
         }
         if(startGamePhase==1){
             startGameBarLabel.setText("Baixando mods: "+progress[startGamePhase]+"/"+max);
+            startGameBarLabel.setSize(startGameBarLabel.getPreferredSize());
         }
 
     }

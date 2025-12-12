@@ -39,7 +39,7 @@ public class CloseButton  extends JButton {
 
     public void paintComponent(Graphics g) {
         this.getParent().repaint();
-        if(this.getMousePosition() != null) {
+        if(this.getModel().isRollover()) {
             Renderer.renderImage(g, Images.closeButtonHoverImage, Vector2i.zero(), dimension, this);
         }else{
             Renderer.renderImage(g, Images.closeButtonImage, Vector2i.zero(), dimension, this);

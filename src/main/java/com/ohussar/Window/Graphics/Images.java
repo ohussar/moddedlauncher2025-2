@@ -18,14 +18,17 @@ public class Images {
     public static BufferedImage progressBarFrameImage;
     public static BufferedImage progressBarCenterImage;
 
-    public static NineSlice progressBar
-            ;
+    public static NineSlice progressBar;
     public static NineSlice button;
     public static NineSlice buttonHover;
     public static NineSlice buttonLocked;
 
     public static NineSlice inputHover;
     public static NineSlice input;
+
+    public static BufferedImage title;
+
+    public static NineSlice background9Slice;
 
     public static void Init(){
         try {
@@ -51,12 +54,18 @@ public class Images {
             buttonHover = new NineSlice(buttonHoverBorder, buttonCenter);
             buttonLocked = new NineSlice(buttonBorder, buttonCenterLocked);
 
-
-
             progressBarCenterImage = readImage("progress_bar_center.png");
             progressBarFrameImage = readImage("progress_bar_frame.png");
 
             progressBar = new NineSlice(buttonBorder, buttonCenter);
+
+            title = readImage("title.png");
+
+            BufferedImage backc = readImage("background_center.png");
+            BufferedImage backb = readImage("background_border.png");
+
+            background9Slice = new NineSlice(backb, backc);
+
 
         } catch (IOException e) {
             throw new IOError(e);

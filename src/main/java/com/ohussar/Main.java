@@ -7,9 +7,12 @@ import com.ohussar.Launcher.Config;
 import com.ohussar.Launcher.Loader;
 import com.ohussar.Launcher.PathMaker;
 import com.ohussar.Launcher.StartProcedure;
+import com.ohussar.Util.Timer;
 import com.ohussar.Util.Vector2i;
 import com.ohussar.Window.Coordinate;
+import com.ohussar.Window.Graphics.Images;
 import com.ohussar.Window.Renderer;
+import com.ohussar.Window.SplashScreen;
 import com.ohussar.Window.Window;
 
 import java.awt.*;
@@ -42,10 +45,18 @@ public class Main {
         System.setProperty("sun.java2d.uiScale", "1");
 
         Renderer.Init();
-        Window.Init();
-        Config.loadConfigFile();
-        Loader.Init();
-        Window.updateDirectoryInfo();
+        Images.Init();
+        SplashScreen.Init();
+
+        Timer.createTimer(1000, (i) ->{
+            SplashScreen.frame.dispose();
+            Window.Init();
+            Config.loadConfigFile();
+            Loader.Init();
+            Window.updateDirectoryInfo();
+            Window.setDownloadThreadsBarVisible(true);
+        });
+
         Thread thread = new Thread(() -> {
             while(true){
                 try {

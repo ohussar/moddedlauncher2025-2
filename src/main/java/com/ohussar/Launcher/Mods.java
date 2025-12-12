@@ -1,6 +1,7 @@
 package com.ohussar.Launcher;
 
 import com.google.gson.JsonElement;
+import com.google.gson.stream.MalformedJsonException;
 import com.ohussar.HTTP.HttpRequester;
 import com.ohussar.Main;
 import com.ohussar.Util.ListSplitter;
@@ -21,9 +22,9 @@ public class Mods {
         JsonElement json = null;
         try {
             json = HttpRequester.makeRequest(Main.modAdress);
-        } catch (IOException | InterruptedException | URISyntaxException e) {
-            StartProcedure.reset();
-            throw new RuntimeException(e);
+        } catch (IOException | InterruptedException | URISyntaxException e ) {
+            Window.createrAlert("Checagem de mods falhou! Tentando iniciar mesmo assim");
+            return;
         }
         if(json != null)
         {
