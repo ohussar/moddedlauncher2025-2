@@ -15,7 +15,9 @@ public class UpdateManager {
     public static final String downloadUrl = "https://raw.githubusercontent.com/ohussar/moddedlauncher2025-2/master/release/launcher.jar";
 
     public static void checkForUpdates(){
-
+        if(Main.isDevEnviroment){
+            return;
+        }
         JsonElement first;
         try {
             first = HttpRequester.makeRequest(Main.serverAdress + "/git" + Main.password);

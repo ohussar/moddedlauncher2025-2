@@ -22,9 +22,9 @@ import java.net.URISyntaxException;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
 
-    private static final boolean isDevEnviroment = true;
+    public static final boolean isDevEnviroment = true;
 
-    public static final String version = "1.1";
+    public static final String version = "1.2";
 
     public static String rootPath = ".";
     public static String minecraftPath = PathMaker.buildPath(rootPath, "Minecraft", ".minecraft");
@@ -51,7 +51,7 @@ public class Main {
         SplashScreen.Init();
 
         UpdateManager.checkForUpdates();
-        
+
 
         Timer.createTimer(10000, (i) ->{
             Window.initializeWindow();
