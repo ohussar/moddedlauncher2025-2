@@ -98,7 +98,6 @@ public class Mods {
 
             Window.setMaxProgressPhase(1, toDownload.size());
 
-
             for(int i = 0; i < Main.downloadThreads; i++){
                 String threadName = "thread-downloader-"+i;
                 int finalI = i;
@@ -148,21 +147,23 @@ public class Mods {
             i = Integer.parseInt(it);
         }
         for( DownloadInfo downloadInfo : toDownload){
-            if(toDownloadRef.remove(downloadInfo)) { // Thread safe
+            if(toDownloadRef.remove(downloadInfo)) {
+                // Thread safe
                 String filename = downloadInfo.filename;
                 String downloadurl = downloadInfo.downloadUrl;
-                try {
-                    Window.updateNthDownloadBar(i, 0);
-                    Window.updateNthDownloadLabel(i, downloadInfo.filename);
-                    System.out.println(filename);
-                    HttpRequester.download(downloadurl, filename, Main.modFolder, Mods::Hook);
-                    Window.updateStartGamePhaseProgress(1, 1);
-                } catch (IOException e) {
+                if(!filename.isEmpty()) {
                     try {
+                        Window.updateNthDownloadBar(i, 0);
+                        Window.updateNthDownloadLabel(i, downloadInfo.filename);
                         HttpRequester.download(downloadurl, filename, Main.modFolder, Mods::Hook);
                         Window.updateStartGamePhaseProgress(1, 1);
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
+                    } catch (IOException e) {
+                        try {
+                            HttpRequester.download(downloadurl, filename, Main.modFolder, Mods::Hook);
+                            Window.updateStartGamePhaseProgress(1, 1);
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
                     }
                 }
             }

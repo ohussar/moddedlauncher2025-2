@@ -24,7 +24,7 @@ public class Main {
 
     public static final boolean isDevEnviroment = false;
 
-    public static final String version = "1.3";
+    public static final String version = "1.3.1";
 
     public static String rootPath = ".";
     public static String minecraftPath = PathMaker.buildPath(rootPath, "Minecraft", ".minecraft");
