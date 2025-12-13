@@ -44,6 +44,8 @@ public class UpdateManager {
                 String d = desc.getAsString();
 
                 if(!Main.version.equals(d)){
+                    System.out.println(Main.version);
+                    System.out.println(d);
                     try {
                         HttpRequester.download(downloadUrl, "launcherD.jar", ".", (b) -> {});
 
