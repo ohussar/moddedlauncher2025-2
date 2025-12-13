@@ -10,6 +10,7 @@ import java.net.URISyntaxException;
 public class UpdateManager {
 
     public static final String checkUrl = "https://api.github.com/repos/ohussar/moddedlauncher2025-2";
+    public static final String downloadUrl = "https://raw.githubusercontent.com/ohussar/moddedlauncher2025-2/master/release/launcher.jar";
 
     public static void checkForUpdates(){
         JsonElement element;
@@ -25,7 +26,11 @@ public class UpdateManager {
                 String d = desc.getAsString();
 
                 if(!Main.version.equals(d)){
-
+                    try {
+                        HttpRequester.download(downloadUrl, "launcherD.jar", ".", (b) -> {});
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
