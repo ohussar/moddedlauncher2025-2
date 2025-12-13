@@ -22,9 +22,9 @@ import java.net.URISyntaxException;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
 
-    public static final boolean isDevEnviroment = true;
+    public static final boolean isDevEnviroment = false;
 
-    public static final String version = "1.2";
+    public static final String version = "1.3";
 
     public static String rootPath = ".";
     public static String minecraftPath = PathMaker.buildPath(rootPath, "Minecraft", ".minecraft");
@@ -55,7 +55,6 @@ public class Main {
 
         Timer.createTimer(10000, (i) ->{
             Window.initializeWindow();
-            //Window.setDownloadThreadsBarVisible(true);
         });
         try {
             JsonElement element = HttpRequester.makeRequest(serverAdress + "/Info");

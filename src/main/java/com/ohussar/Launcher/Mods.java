@@ -154,6 +154,7 @@ public class Mods {
                 try {
                     Window.updateNthDownloadBar(i, 0);
                     Window.updateNthDownloadLabel(i, downloadInfo.filename);
+                    System.out.println(filename);
                     HttpRequester.download(downloadurl, filename, Main.modFolder, Mods::Hook);
                     Window.updateStartGamePhaseProgress(1, 1);
                 } catch (IOException e) {
