@@ -1,6 +1,7 @@
 package com.ohussar.Window;
 
 import com.ohussar.Launcher.Config;
+import com.ohussar.Launcher.Loader;
 import com.ohussar.Launcher.StartProcedure;
 import com.ohussar.Main;
 import com.ohussar.Util.IntFilter;
@@ -52,9 +53,26 @@ public class Window {
     public static Label alertLabel;
 
 
+    public static Background gif;
+
     public static int yOffStartGame = 0;
 
     private static final BarLabel[] downloadThreadsBar = new BarLabel[Main.downloadThreads];
+
+    public static boolean isInitialized = false;
+
+    public static String informationText = "";
+
+    public static void initializeWindow(){
+        if(!isInitialized) {
+            SplashScreen.frame.dispose();
+            Window.Init();
+            Config.loadConfigFile();
+            Loader.Init();
+            Window.updateDirectoryInfo();
+            isInitialized = true;
+        }
+    }
 
 
     public static void Init(){
@@ -69,6 +87,17 @@ public class Window {
         initAlert();
         createConfigWindow(null);
         createPopup(null);
+
+
+        gif = new Background(frame, Images.hampter, new Dimension(Images.hampter.getIconWidth(), Images.hampter.getIconHeight()),
+                new Coordinate(frameSize)
+                        .centerX(Images.hampter.getIconWidth())
+                        .centerY(Images.hampter.getIconHeight())
+                        .offset(0, 32)
+                        .get()
+        );
+
+
         int downY = frameSize.height - 20*Renderer.scaleFactor;
 
         playButton = new Button(frame, Vector2i.zero(),"Jogar");
@@ -156,7 +185,7 @@ public class Window {
 
         label.setSize(frameSize);
 
-        label.setText("<html>AAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAA AAAAAAAA AAAAAAAAA</html>");
+        label.setText("<html>" + informationText + "</html>");
 
         label.setPosition(
                 new Coordinate()
@@ -165,9 +194,6 @@ public class Window {
         );
 
         Dimension size =  new Dimension(640, 360);
-
-
-
 
 
        Background back = new Background(frame, Images.title, size,
@@ -513,6 +539,7 @@ public class Window {
         for(int i = 0; i < Main.downloadThreads; i++){
             setNthDownloadVisible(i, value);
         }
+        gif.setVisible(!value);
     }
     public static void setDownloadBarMaxValue(int n, int value){
         downloadThreadsBar[n].progressBar.setMaximum(value);
@@ -539,6 +566,18 @@ public class Window {
     public static void setNthDownloadVisible(int n, boolean value){
         downloadThreadsBar[n].progressBar.setVisible(value);
         downloadThreadsBar[n].label.setVisible(value);
+        if(!value) {
+            boolean pp = true;
+            for (int i = 0; i < Main.downloadThreads; i++) {
+                if(downloadThreadsBar[i].progressBar.isVisible()){
+                    pp = false;
+                }
+            }
+            if(pp){
+                gif.setVisible(true);
+            }
+        }
+
     }
 
 

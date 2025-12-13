@@ -3,10 +3,8 @@ package com.ohussar;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.ohussar.Launcher.Config;
-import com.ohussar.Launcher.Loader;
-import com.ohussar.Launcher.PathMaker;
-import com.ohussar.Launcher.StartProcedure;
+import com.ohussar.HTTP.HttpRequester;
+import com.ohussar.Launcher.*;
 import com.ohussar.Util.Timer;
 import com.ohussar.Util.Vector2i;
 import com.ohussar.Window.Coordinate;
@@ -24,11 +22,15 @@ import java.net.URISyntaxException;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
 
-    public static String rootPath = ".";
+    private static final boolean isDevEnviroment = true;
 
+    public static final String version = "1.0";
+
+    public static String rootPath = ".";
     public static String minecraftPath = PathMaker.buildPath(rootPath, "Minecraft", ".minecraft");
 
-    private static final String serverAdress = "https://server-test.ashycoast-64e998bb.brazilsouth.azurecontainerapps.io";
+    private static final String serverAdress = isDevEnviroment ? "http://localhost:25523" : "https://server-test.ashycoast-64e998bb.brazilsouth.azurecontainerapps.io";
+
     private static final String password = "?code=testCode";
 
     public static String forgeAdress = serverAdress+"/ForgeDownloadLink"+password;
@@ -48,15 +50,22 @@ public class Main {
         Images.Init();
         SplashScreen.Init();
 
-        Timer.createTimer(1000, (i) ->{
-            SplashScreen.frame.dispose();
-            Window.Init();
-            Config.loadConfigFile();
-            Loader.Init();
-            Window.updateDirectoryInfo();
-            Window.setDownloadThreadsBarVisible(true);
-        });
+        UpdateManager.checkForUpdates();
 
+
+
+        Timer.createTimer(10000, (i) ->{
+            Window.initializeWindow();
+            //Window.setDownloadThreadsBarVisible(true);
+        });
+        try {
+            JsonElement element = HttpRequester.makeRequest(serverAdress + "/Info");
+            Window.informationText = element.getAsJsonObject().get("text").getAsString();
+            Window.initializeWindow();
+        } catch (Exception e){
+            Window.informationText = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In sed ante in augue dictum viverra. Duis eu tellus blandit, efficitur orci et, eleifend risus. Fusce ligula elit, volutpat sit amet dui nec, porta rhoncus tellus.";
+            Window.initializeWindow();
+        }
         Thread thread = new Thread(() -> {
             while(true){
                 try {

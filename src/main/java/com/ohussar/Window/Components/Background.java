@@ -15,6 +15,8 @@ public class Background extends JComponent {
     private NineSlice slice;
     private Vector2i position;
 
+    private ImageIcon icon;
+
     public Background(Container frame, Image image, Dimension dimension) {
         this.setBounds(0, 0, dimension.width, dimension.height);
         this.image = image;
@@ -38,6 +40,16 @@ public class Background extends JComponent {
         this.setLocation(position.x, position.y);
         frame.add(this);
     }
+    public Background(Container frame, ImageIcon image, Dimension dimension, Vector2i position) {
+
+        this.icon = image;
+        this.size = dimension;
+        this.position = position;
+        this.setSize(dimension);
+        this.setLocation(position.x, position.y);
+        frame.add(this);
+    }
+
 
 
     public Background(Container frame, NineSlice image, Dimension dimension, Vector2i position) {
@@ -59,6 +71,10 @@ public class Background extends JComponent {
 
     @Override
     public void paint(Graphics g) {
+        if(icon != null){
+            g.drawImage(icon.getImage(), 0, 0, null);
+        }
+
         if(slice != null){
             Renderer.render9Slice(g, slice, size, this);
             return;

@@ -3,9 +3,12 @@ package com.ohussar.Window.Graphics;
 import com.ohussar.Main;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.IOError;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class Images {
     public static BufferedImage backgroundImage;
@@ -29,6 +32,17 @@ public class Images {
     public static BufferedImage title;
 
     public static NineSlice background9Slice;
+
+    public static ImageIcon hampter;
+    public static URL hampterUrl;
+
+    static {
+        try {
+            hampterUrl = new URL("https://media.tenor.com/yKjcNbCzNUoAAAAM/yessir-4t.gif");
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static void Init(){
         try {
@@ -65,6 +79,9 @@ public class Images {
             BufferedImage backb = readImage("background_border.png");
 
             background9Slice = new NineSlice(backb, backc);
+
+
+            hampter = new ImageIcon(hampterUrl);
 
 
         } catch (IOException e) {
