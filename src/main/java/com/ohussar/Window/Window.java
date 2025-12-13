@@ -185,8 +185,8 @@ public class Window {
 
         label.setSize(frameSize);
 
-        label.setText("<html>" + informationText + "</html>");
-
+        //label.setText("<html>" + informationText + "</html>");
+        label.setText("old");
         label.setPosition(
                 new Coordinate()
                         .offset(0, -60 * Renderer.scaleFactor)

@@ -28,6 +28,16 @@ public class HttpRequester {
         }
         return JsonParser.parseString(a.body());
     }
+    public static JsonElement makeRequest(String url, String token) throws IOException, InterruptedException, URISyntaxException, MalformedJsonException {
+        HttpRequest request = HttpRequest.newBuilder().GET().header("Authorization", token).uri(new URI(url)).build();
+        HttpResponse<String> a = client.send(request, HttpResponse.BodyHandlers.ofString());
+        if(a.body().startsWith("<!DOCTYPE html>")){
+            throw new IOException("aaa");
+        }
+        return JsonParser.parseString(a.body());
+    }
+
+
 
     public static void download(String downloadUrl, String filename, String path, Trigger hook) throws IOException{
         URL url1 = new URL(downloadUrl);

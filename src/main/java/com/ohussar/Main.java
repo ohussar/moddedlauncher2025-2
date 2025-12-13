@@ -29,9 +29,9 @@ public class Main {
     public static String rootPath = ".";
     public static String minecraftPath = PathMaker.buildPath(rootPath, "Minecraft", ".minecraft");
 
-    private static final String serverAdress = isDevEnviroment ? "http://localhost:25523" : "https://server-test.ashycoast-64e998bb.brazilsouth.azurecontainerapps.io";
+    public static final String serverAdress = isDevEnviroment ? "http://localhost:25523" : "https://server-test.ashycoast-64e998bb.brazilsouth.azurecontainerapps.io";
 
-    private static final String password = "?code=testCode";
+    public static final String password = "?code=testCode";
 
     public static String forgeAdress = serverAdress+"/ForgeDownloadLink"+password;
     public static String modAdress = serverAdress+"/Mods"+password;
@@ -51,8 +51,7 @@ public class Main {
         SplashScreen.Init();
 
         UpdateManager.checkForUpdates();
-
-
+        
 
         Timer.createTimer(10000, (i) ->{
             Window.initializeWindow();
