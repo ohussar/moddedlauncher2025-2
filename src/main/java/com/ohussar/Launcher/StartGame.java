@@ -63,7 +63,7 @@ public class StartGame {
         }
 
         try {
-            Main.minecraftProcess = Runtime.getRuntime().exec("cmd.exe /c cd /d" + finalPath +File.separator + " && cmd /c test.bat");
+            Main.minecraftProcess = Runtime.getRuntime().exec("cmd.exe /c cd /d " + finalPath +File.separator + " && cmd /c test.bat");
             StreamHandler.handleInputStream(Main.minecraftProcess.getInputStream());
             StreamHandler.handleErrorStream(Main.minecraftProcess.getErrorStream());
             Window.offsetButtonsWhenPlayButtonPressed(false);
