@@ -17,6 +17,7 @@ import java.util.List;
 
 public class StartProcedure {
     public static void startProcedure(Object obj) {
+        Window.anyButtonPress();
         Thread thread = new Thread(() -> {
             Window.offsetButtonsWhenPlayButtonPressed(true);
             Window.beginNewPhase(0);

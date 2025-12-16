@@ -45,6 +45,7 @@ public class Util {
         try {
             return Files.readString(Path.of(path));
         } catch (IOException e) {
+            e.printStackTrace();
             return "";
         }
     }

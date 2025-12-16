@@ -23,22 +23,46 @@ public class Config {
 
     public static boolean isForgeInstalled;
 
+    public static boolean closeOnLaunch;
+
+    public static boolean startOnServer;
+
+
     public static void loadConfigFile(){
         String fileContent = Util.readFile(configFile);
         JsonElement element = JsonParser.parseString(fileContent);
         String username = "";
         String rootPath = "";
+        boolean close_on_launch = false;
+        boolean start_on_server = false;
         int ram = 0;
         if(!element.isJsonNull()){
+            jsonReaded = fileContent;
             JsonObject obj = element.getAsJsonObject();
             username = obj.get("username").getAsString();
             ram = obj.get("ram").getAsInt();
             rootPath = obj.get("root_path").getAsString();
             isForgeInstalled = obj.get("forge_installed").getAsBoolean();
-            jsonReaded = fileContent;
+
+            if(obj.has("close_on_launch")){
+                close_on_launch = obj.get("close_on_launch").getAsBoolean();
+            }else{
+                addBoolean("close_on_launch", false);
+            }
+            if(obj.has("start_on_server")){
+                start_on_server = obj.get("start_on_server").getAsBoolean();
+            }else{
+                addBoolean("start_on_server", false);
+            }
+
+
+
         }else{
             jsonReaded = "{\"username\": \"\", \"ram\": 0, \"root_path\": default}, \"forge_installed\": false}";
         }
+
+        closeOnLaunch = close_on_launch;
+        startOnServer = start_on_server;
 
         if(Window.usernameInput != null){
             if(!username.isEmpty()){
@@ -62,13 +86,49 @@ public class Config {
 
     public static void setForgeInstalled(boolean p){
         isForgeInstalled = p;
+        addBoolean("forge_installed", p);
+    }
+
+
+    public static void setCloseOnLaunch(boolean p){
+        closeOnLaunch = p;
+        addBoolean("close_on_launch", p);
+    }
+
+    public static void setStartOnServer(boolean p){
+        startOnServer = p;
+        addBoolean("start_on_server", p);
+    }
+
+    public static void addString(String property, String value){
         JsonElement element = JsonParser.parseString(jsonReaded);
         if(!element.isJsonNull()){
             JsonObject obj = element.getAsJsonObject();
-            obj.addProperty("forge_installed", p);
+            obj.addProperty(property, value);
             Util.writeToFile(configFile, element.toString());
+            jsonReaded = element.toString();
         }
     }
+    public static void addBoolean(String property, boolean value){
+        JsonElement element = JsonParser.parseString(jsonReaded);
+        if(!element.isJsonNull()){
+            JsonObject obj = element.getAsJsonObject();
+            obj.addProperty(property, value);
+            Util.writeToFile(configFile, element.toString());
+            jsonReaded = element.toString();
+        }
+    }
+    public static void addInt(String property, int value){
+        JsonElement element = JsonParser.parseString(jsonReaded);
+        if(!element.isJsonNull()){
+            JsonObject obj = element.getAsJsonObject();
+            obj.addProperty(property, value);
+            Util.writeToFile(configFile, element.toString());
+            jsonReaded = element.toString();
+        }
+    }
+
+
 
     public static void updateRootPath(String newRootPath){
         if(newRootPath.isEmpty()){
@@ -82,33 +142,20 @@ public class Config {
         rootPath = newRootPath;
         Main.minecraftPath = PathMaker.buildPath(Main.rootPath, "Minecraft", ".minecraft");
         Main.modFolder = PathMaker.buildPath(Main.minecraftPath, "mods");
-        JsonElement element = JsonParser.parseString(jsonReaded);
-        if(!element.isJsonNull()){
-            JsonObject obj = element.getAsJsonObject();
-            obj.addProperty("root_path", newRootPath);
-            Util.writeToFile(configFile, element.toString());
-        }
+
+
+        addString("root_path", newRootPath);
         Loader.Init();
     }
 
     public static void updateRam(int newValue){
         Config.ram = newValue;
-        JsonElement element = JsonParser.parseString(jsonReaded);
-        if(!element.isJsonNull()){
-            JsonObject obj = element.getAsJsonObject();
-            obj.addProperty("ram", newValue);
-            Util.writeToFile(configFile, element.toString());
-        }
+        addInt("ram", newValue);
     }
 
     public static void updateUsername(String username){
         Config.username = username;
-        JsonElement element = JsonParser.parseString(jsonReaded);
-        if(!element.isJsonNull()){
-            JsonObject obj = element.getAsJsonObject();
-            obj.addProperty("username", username);
-            Util.writeToFile(configFile, element.toString());
-        }
+        addString("username", username);
     }
 
 

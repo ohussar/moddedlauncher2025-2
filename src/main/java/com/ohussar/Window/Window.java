@@ -1,6 +1,7 @@
 package com.ohussar.Window;
 
 import com.ohussar.Launcher.Config;
+import com.ohussar.Launcher.Forge;
 import com.ohussar.Launcher.Loader;
 import com.ohussar.Launcher.StartProcedure;
 import com.ohussar.Main;
@@ -46,6 +47,9 @@ public class Window {
     public static InputText ramInput;
     public static InputText usernameInput;
 
+    public static CheckBox forgeCheckBox;
+    public static CheckBox startOnServer;
+
     private static Label usernameTitle;
     public static Label directoryInfo;
     public static Label startGameBarLabel;
@@ -69,7 +73,7 @@ public class Window {
             Window.Init();
             Config.loadConfigFile();
             Loader.Init();
-            Window.updateDirectoryInfo();
+            Window.updateWindowInfo();
             isInitialized = true;
         }
     }
@@ -359,6 +363,9 @@ public class Window {
         });
         ((PlainDocument) ramInput.getDocument()).setDocumentFilter(new IntFilter());
 
+
+
+
         Button btn = new Button(configWindow, Vector2i.zero(), "Alterar diretório");
         int y= 22 * Renderer.scaleFactor + ramInput.getPreferredSize().height;
         btn.setPosition(new Vector2i(
@@ -367,6 +374,7 @@ public class Window {
         );
 
         btn.onPress((a) -> {
+            anyButtonPress();
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             int result = fileChooser.showOpenDialog(null);
@@ -387,13 +395,49 @@ public class Window {
             }
         });
 
+
+
+
         directoryInfo = new Label(configWindow, Vector2i.zero(), "ABCDEDEDEDE");
         directoryInfo.setPosition(
                 new Vector2i(5 * Renderer.scaleFactor,
                          y + btn.getPreferredSize().height + Renderer.scaleFactor
                         )
         );
-        updateDirectoryInfo();
+
+        Button reinstall = new Button(configWindow, Vector2i.zero(), "Reinstalar Forge");
+        reinstall.setPosition(new Vector2i(
+                3 * Renderer.scaleFactor,
+                y + btn.getPreferredSize().height + 4 * Renderer.scaleFactor + directoryInfo.getPreferredSize().height)
+        );
+        reinstall.onPress((o) -> {
+            Config.setForgeInstalled(false);
+            Window.createrAlert("Inicie o jogo para reinstalar o forge!");
+        });
+
+
+        forgeCheckBox = new CheckBox(configWindow, "Fechar o launcher ao iniciar.");
+        forgeCheckBox.setPosition(new Vector2i(
+                3 * Renderer.scaleFactor,
+                y + btn.getPreferredSize().height + 8 * Renderer.scaleFactor + directoryInfo.getPreferredSize().height + reinstall.getPreferredSize().height
+        )
+        );
+        forgeCheckBox.addActionListener((a) -> {
+            Config.setCloseOnLaunch(!Config.closeOnLaunch);
+        });
+
+        startOnServer = new CheckBox(configWindow, "Entrar diretamente no servidor.");
+        startOnServer.setPosition(new Vector2i(
+                        3 * Renderer.scaleFactor,
+                        y + btn.getPreferredSize().height + 12 * Renderer.scaleFactor + directoryInfo.getPreferredSize().height + reinstall.getPreferredSize().height + forgeCheckBox.getHeight()
+                )
+        );
+        startOnServer.addActionListener((a) -> {
+            Config.setStartOnServer(!Config.startOnServer);
+        });
+
+
+        updateWindowInfo();
 
         new CloseButton(configWindow);
         new Background(configWindow, Images.backgroundImage, configSize);
@@ -405,7 +449,15 @@ public class Window {
         //configWindow.setLocationRelativeTo(null);
     }
 
-    public static void updateDirectoryInfo(){
+    public static void anyButtonPress(){
+        Window.usernameInput.setEditable(false);
+        Window.usernameInput.typing = false;
+        Window.ramInput.setEditable(false);
+        Window.ramInput.typing = false;
+    }
+
+
+    public static void updateWindowInfo(){
         if(Config.rootPath.equals("default")){
             directoryInfo.setText("Diretório: Padrão");
             directoryInfo.setSize(directoryInfo.getPreferredSize());
@@ -413,10 +465,13 @@ public class Window {
             directoryInfo.setText("Diretório: " + Config.rootPath);
             directoryInfo.setSize(directoryInfo.getPreferredSize());
         }
+        forgeCheckBox.setSelected(Config.closeOnLaunch);
+        startOnServer.setSelected(Config.startOnServer);
     }
 
 
     public static void setConfigVisible(Object obj){
+
         configWindow.setVisible(true);
     }
     public static void setPopupVisible(Object obj){

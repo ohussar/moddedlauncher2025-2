@@ -21,6 +21,10 @@ public class Images {
     public static BufferedImage progressBarFrameImage;
     public static BufferedImage progressBarCenterImage;
 
+    public static BufferedImage checkBox;
+    public static BufferedImage checkBoxHover;
+    public static BufferedImage marked;
+
     public static NineSlice progressBar;
     public static NineSlice button;
     public static NineSlice buttonHover;
@@ -79,6 +83,11 @@ public class Images {
             BufferedImage backb = readImage("background_border.png");
 
             background9Slice = new NineSlice(backb, backc);
+
+
+            checkBox = readImage("check_box.png");
+            checkBoxHover = readImage("check_box_hover.png");
+            marked = readImage("marked.png");
 
 
             hampter = new ImageIcon(hampterUrl);

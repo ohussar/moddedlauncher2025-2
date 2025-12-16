@@ -24,7 +24,7 @@ public class Main {
 
     public static final boolean isDevEnviroment = false;
 
-    public static final String version = "1.3.4";
+    public static final String version = "1.3.5";
 
     public static String rootPath = ".";
     public static String minecraftPath = PathMaker.buildPath(rootPath, "Minecraft", ".minecraft");
@@ -73,6 +73,8 @@ public class Main {
                 }
 
                 if(minecraftProcess != null && minecraftProcess.isAlive()){
+
+
                     if(Window.playButton != null){
                         if(Window.playButton.getText().equals("Jogar")){
                             Window.playButton.setText("Encerrar");

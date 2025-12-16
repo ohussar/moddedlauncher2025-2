@@ -1,6 +1,7 @@
 package com.ohussar.Launcher;
 
 import com.ohussar.Main;
+import com.ohussar.Util.Timer;
 import com.ohussar.Util.Util;
 import com.ohussar.Window.Window;
 
@@ -18,10 +19,20 @@ public class StartGame {
     public static void startGame(){
 
         String res = Loader.FINAL_COMMAND;
+
+        if(Config.startOnServer){
+            res += "--quickPlayMultiplayer \"26.68.69.48:12345\"";
+        }
+
         res = res.replace("${RAM}", Integer.toString(Config.ram));
         res = res.replace("${auth_player_name}", Config.username);
         res = res.replace("${auth_uuid}",  UUID.nameUUIDFromBytes(Config.username.getBytes()).toString());
-        res = res.replace("%CLASSPATH%", "@" + System.getProperty("user.dir") + File.separator + "bakedclasspath.txt");
+        res = res.replace("%CLASSPATH%", "\""+"@" + System.getProperty("user.dir") + File.separator + "bakedclasspath.txt" + "\"");
+
+
+
+
+
 
         if(Config.username.isEmpty()){
             Window.createrAlert("O nome de usuário está vazio!");
@@ -63,10 +74,19 @@ public class StartGame {
         }
 
         try {
-            Main.minecraftProcess = Runtime.getRuntime().exec("cmd.exe /c cd /d " + finalPath +File.separator + " && cmd /c test.bat");
+            Main.minecraftProcess = Runtime.getRuntime().exec("cmd.exe /c cd /d " +"\"" +finalPath +File.separator + "\"" + " && cmd /c test.bat");
             StreamHandler.handleInputStream(Main.minecraftProcess.getInputStream());
             StreamHandler.handleErrorStream(Main.minecraftProcess.getErrorStream());
             Window.offsetButtonsWhenPlayButtonPressed(false);
+
+            if(Config.closeOnLaunch){
+                Timer.createTimer(5000 , (t) -> {
+                    if(Main.minecraftProcess != null && Main.minecraftProcess.isAlive()){
+                        System.exit(0);
+                    }
+                });
+            }
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
