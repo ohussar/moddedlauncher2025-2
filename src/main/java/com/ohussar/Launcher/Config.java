@@ -22,9 +22,7 @@ public class Config {
     public static String rootPath = "";
 
     public static boolean isForgeInstalled;
-
     public static boolean closeOnLaunch;
-
     public static boolean startOnServer;
 
 
@@ -127,8 +125,6 @@ public class Config {
             jsonReaded = element.toString();
         }
     }
-
-
 
     public static void updateRootPath(String newRootPath){
         if(newRootPath.isEmpty()){

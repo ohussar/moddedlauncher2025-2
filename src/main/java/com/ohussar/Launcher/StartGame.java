@@ -21,18 +21,13 @@ public class StartGame {
         String res = Loader.FINAL_COMMAND;
 
         if(Config.startOnServer){
-            res += "--quickPlayMultiplayer \"26.68.69.48:12345\"";
+            res += "--quickPlayMultiplayer \"minecraftretorno.enxada.host\"";
         }
 
         res = res.replace("${RAM}", Integer.toString(Config.ram));
         res = res.replace("${auth_player_name}", Config.username);
-        res = res.replace("${auth_uuid}",  UUID.nameUUIDFromBytes(Config.username.getBytes()).toString());
+        res = res.replace("${auth_uuid}",  UUID.nameUUIDFromBytes(( "OfflinePlayer:" + Config.username).getBytes()).toString());
         res = res.replace("%CLASSPATH%", "\""+"@" + System.getProperty("user.dir") + File.separator + "bakedclasspath.txt" + "\"");
-
-
-
-
-
 
         if(Config.username.isEmpty()){
             Window.createrAlert("O nome de usuário está vazio!");
